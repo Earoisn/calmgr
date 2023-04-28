@@ -1,7 +1,7 @@
-from datetime import datetime as dt, timedelta as delta, timezone as tz
+from datetime import datetime as dt
 class Event:
-    def __init__(self,stream,precio = 60):
-        días = {0:"lunes", 1:"martes", 2:"miércoles", 3:"jueves", 4:"viernes", 5:"sábado", 6:"domingo"}
+    def __init__(self, stream, precio = 60):
+        días = {0: "lunes", 1: "martes", 2: "miércoles", 3: "jueves", 4: "viernes", 5: "sábado", 6: "domingo"}
         self.inicio = dt.fromisoformat(stream["start"]["dateTime"])
         self.fin = dt.fromisoformat(stream["end"]["dateTime"])
         self.nombre = stream["summary"]
@@ -16,13 +16,13 @@ class Event:
         self.fin_m = self.fin.month
         self.fin_h = self.fin.hour
         self.fin_min = self.fin.minute
-        self.durac = (self.fin - self.inicio).seconds/60
-        self.dur_hora = self.durac//60
-        self.dur_minuto = self.durac%60
-        self.precio = self.durac*precio
+        self.durac = (self.fin - self.inicio).seconds / 60
+        self.dur_hora = self.durac // 60
+        self.dur_minuto = self.durac % 60
+        self.precio = self.durac * precio
         if " y " in self.nombre:
             self.precio *= 1.5
         self.clases = []
     
-    def agrega_clase(self,d,m,ini_h,ini_min,fin_h,fin_min,precio):
-        self.clases.append((d,m,ini_h,ini_min,fin_h,fin_min,precio))
+    def agrega_clase(self, d, m, ini_h, ini_min, fin_h, fin_min, precio):
+        self.clases.append((d, m, ini_h, ini_min, fin_h, fin_min, precio))

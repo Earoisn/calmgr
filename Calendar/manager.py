@@ -6,7 +6,7 @@ sys.path.extend(["D:\\code\\gcloud","D:\\code\\gcloud\\Calendar"])
 from Google import glogin, get_service
 from event import Event
 
-días = {0:"lunes", 1:"martes", 2:"miércoles", 3:"jueves", 4:"viernes", 5:"sábado", 6:"domingo"}
+días = {0: "lunes", 1: "martes", 2: "miércoles", 3: "jueves", 4: "viernes", 5: "sábado", 6: "domingo"}
 
 def n2a(datetime:dt):
     "abrev. de 'naive to aware' - toma un datetime y lo hace offset aware para Arg"
@@ -162,7 +162,7 @@ def disponible(intervalo, inidefault:tuple=(9,0), findefault:tuple=(21,30)):
         texto += "\n"
     texto = texto[0:-3]+"."
     print(texto)
-    with open ("C:\\Users\\Mariano\\Desktop\\horarios.json","w") as fh:
+    with open("C:\\Users\\Mariano\\Desktop\\horarios.json","w") as fh:
         for día, intervalos in horarios_disponibles.items():
             horarios_disponibles[día]=[(str(horario[0]), str(horario[1])) for horario in intervalos]
         json.dump(horarios_disponibles, fh)
@@ -271,7 +271,7 @@ def calc_ingresos(intervalo:tuple):
         plata correspondiente al intervalo, basada en los eventos de Google Calendar.
 
     """
-    precio = input ("Precio de la hora o enter para usar el valor por defecto.\n")
+    precio = input("Precio de la hora o enter para usar el valor por defecto.\n")
     if len(precio) != 0:
         try:
             precio = eval(precio) / 60
