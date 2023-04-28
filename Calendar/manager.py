@@ -288,7 +288,6 @@ def calc_ingresos(intervalo:tuple):
     print (f"Total: ${sum(plata):.0f}.\n")
 
 def main():
-    print ("hola")
     while True: 
         ejecutar = "x"    
         while ejecutar not in "hac":
