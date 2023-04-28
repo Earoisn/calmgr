@@ -144,7 +144,7 @@ def disponible(intervalo,inidefault:tuple=(9,0),findefault:tuple=(21,30)):
     texto = ""
     for k,v in horarios_disponibles.items():
         if not ("sábado" or "domingo") in k:
-            texto += "  •"+k+":\n    "
+            texto += f"  •{k}:\n    "
             for ini,fin in v:
                 if (ini.hour,ini.minute) == (inidefault.hour,inidefault.minute):
                     ini_h,ini_min = ini.hour, ini.minute 
