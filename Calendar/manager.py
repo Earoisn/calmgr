@@ -304,8 +304,6 @@ def main():
                 info_alumnos(intervalo)
             case "c":
                 calc_ingresos(intervalo)
-            case _:
-                print("La cagaste.")
         
         terminar = input("Espacio para volver a usar, enter para terminar.\n")
         if len(terminar) == 0: break
