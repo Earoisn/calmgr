@@ -179,7 +179,7 @@ def dic_alumnos(intervalo:tuple, precio = 60):
         Event().clases = lista de tuplas (d, m, ini_h, ini_min, fin_h, fin_min, precio) para cada clase.
     """
     page_token = None
-    tmin,tmax = intervalo
+    tmin, tmax = intervalo
     alumnos = dict()
     while True:
         api = "calendar"
