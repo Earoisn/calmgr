@@ -189,7 +189,7 @@ def dic_alumnos(intervalo:tuple, precio = 60):
                                         calendarId ='primary',
                                         timeMin = tmin,
                                         timeMax = tmax,
-                                        singleEvents=True,
+                                        singleEvents = True,
                                         orderBy = 'startTime',
                                         pageToken = page_token
                                         ).execute()
