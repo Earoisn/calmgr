@@ -18,35 +18,35 @@ def s2d(datetime:str):
 
 def t2d(datetime:tuple):
     "abrev. de 'tuple_to_date' - (año,mes,día,hora,minuto) -> offset aware datetime para Arg"
-    return n2a(dt(datetime[0],datetime[1],datetime[2],datetime[3],datetime[4]))
+    return n2a(dt(datetime[0], datetime[1], datetime[2], datetime[3], datetime[4]))
 
 def tinter():
     """
     Pide al usuario día, mes y año o toma fecha actual y cantidad de días por delante.
-    Devuelve tupla (tmin,tmax) de fechas en formato iso para usar la API de Google Calendar
+    Devuelve tupla (tmin, tmax) de fechas en formato iso para usar la API de Google Calendar
     """
     def check_fecha(fecha):
-        if len(fecha.split(","))==2:
+        if len(fecha.split(",")) == 2:
             año = ahora.year
             día,mes = eval(fecha)
         else:
-            día,mes,año=eval(fecha)
-            if año<100: año+=2000
-        return (día,mes,año)
+            día, mes, año = eval(fecha)
+            if año < 100: año += 2000
+        return (día, mes, año)
     
     ahora = n2a(dt.now())
     desde = input("Dejar un espacio para cambiar fecha inicial, enter para fecha actual.\n")
     if desde == " ":
-        fecha = input("desde día,mes[,año]:\n")
-        día,mes,año = check_fecha(fecha)
-        desde = ahora.replace(year=año, month=mes, day=día, hour=0, minute=0)     
+        fecha = input("desde día, mes[, año]:\n")
+        día, mes, año = check_fecha(fecha)
+        desde = ahora.replace(year = año, month = mes, day = día, hour = 0, minute = 0)     
     else:
         desde = ahora
     hasta = input("Dejar un espacio para cambiar fecha final, enter para fecha actual.\n")
     if hasta == " ":
         fecha = input("Espacio para fecha, enter para días\n")
         if fecha == " ":
-            fecha = input("hasta día,mes[,año]:\n")
+            fecha = input("hasta día, mes[, año]:\n")
             día, mes, año = check_fecha(fecha)
             hasta = ahora.replace(year=año, month=mes, day=día, hour= 0, minute= 0)
         else:
@@ -59,12 +59,12 @@ def tinter():
             hasta = desde + delta(hasta)
     else:
         hasta = ahora
-        if (hasta-desde).total_seconds()<=0:
+        if (hasta - desde).total_seconds() <= 0:
             print("La cagaste. Las fechas de inicio y finalización son iguales o la ventana temporal es negativa.")
             return None
     tmax = hasta.isoformat()
     tmin = desde.isoformat()
-    return (tmin,tmax)
+    return (tmin, tmax)
 
 def freebusy(intervalo:tuple):
     """
@@ -78,7 +78,7 @@ def freebusy(intervalo:tuple):
     tmin, tmax = intervalo
     api = 'calendar'
     creds = glogin(api)
-    calendar = get_service(creds,api)
+    calendar = get_service(creds, api)
     events_busy = calendar.freebusy().query(body={
                                         "items": [{'id': 'primary'}],
                                         "timeMax": tmax,
@@ -92,14 +92,14 @@ def freebusy(intervalo:tuple):
     else:
         return events_busy
 
-def disponible(intervalo,inidefault:tuple=(9,0),findefault:tuple=(21,30)):
+def disponible(intervalo, inidefault:tuple=(9,0), findefault:tuple=(21,30)):
     """
     Args:
         events_busy: freebusy().query() de la API de Google Calendar,
-        inidefault: tupla (hora,minuto) para inicio default del día, 
+        inidefault: tupla (hora, minuto) para inicio default del día, 
         findefault: tupla (hora,minuto) para fin default del día 
     Returns:
-        json en el escritorio con horarios disponibles: {'día de la semana d/m':[(datetime inicio,datetime fin)...]} 
+        json en el escritorio con horarios disponibles: {'día de la semana d/m':[(datetime inicio, datetime fin)...]} 
         para intervalos de tiempo libre de 60 minutos o más, dejando 5 minutos libres entre eventos.
     Prints:
         Los resultados en formato amigable
@@ -107,15 +107,15 @@ def disponible(intervalo,inidefault:tuple=(9,0),findefault:tuple=(21,30)):
     cambiar = input("Cambiar hora de inicio y finalización del día laboral? Espacio para cambiar, enter para seguir.\n")
     if len(cambiar) != 0:
         try:
-            ini_h,ini_min,fin_h,fin_min = eval(input("hora inicio, minuto inicio, hora fin, minuto fin. Todos números enteros.\n"))
-            inidefault = (ini_h,ini_min)
-            findefault = (fin_h,fin_min)
+            ini_h, ini_min, fin_h, fin_min = eval(input("hora inicio, minuto inicio, hora fin, minuto fin. Todos números enteros.\n"))
+            inidefault = (ini_h, ini_min)
+            findefault = (fin_h, fin_min)
         except:
             print("La cagaste, valores establecidos por defecto a las 9:00 y las 21:30.\n")
     
     events_busy = freebusy(intervalo)["calendars"]["primary"]["busy"]
-    ini_h,ini_min = inidefault
-    fin_h,fin_min = findefault
+    ini_h, ini_min = inidefault
+    fin_h, fin_min = findefault
     actual = None
     anterior = None
     horarios_disponibles = {}
@@ -125,19 +125,19 @@ def disponible(intervalo,inidefault:tuple=(9,0),findefault:tuple=(21,30)):
         fin = s2d(evento["end"])
         if actual == None or ini.date() != actual:
             actual = ini.date()
-            inidefault = t2d((ini.year,ini.month,ini.day,ini_h,ini_min))
-            if (ahora-inidefault).total_seconds() > 0:
+            inidefault = t2d((ini.year, ini.month, ini.day, ini_h, ini_min))
+            if (ahora - inidefault).total_seconds() > 0:
                 inidefault = ahora
             key = f"{días[actual.weekday()]} {actual.day}/{actual.month}"
-            horarios_disponibles.setdefault(key,[])
-            if anterior != None and (findefault-anterior).total_seconds()/60 > 60:
-                horarios_disponibles[prevkey].append((anterior,findefault))
-            if (ini-inidefault).total_seconds()/60 > 60:
-                horarios_disponibles[key].append((inidefault,ini))
-        elif (ini-anterior).total_seconds()/60 > 60:
-            horarios_disponibles[key].append((anterior,ini))
+            horarios_disponibles.setdefault(key, [])
+            if anterior != None and (findefault - anterior).total_seconds() / 60 > 60:
+                horarios_disponibles[prevkey].append((anterior, findefault))
+            if (ini - inidefault).total_seconds() / 60 > 60:
+                horarios_disponibles[key].append((inidefault, ini))
+        elif (ini - anterior).total_seconds() / 60 > 60:
+            horarios_disponibles[key].append((anterior, ini))
         anterior = fin
-        findefault = t2d((ini.year,ini.month,ini.day,fin_h,fin_min))
+        findefault = t2d((ini.year, ini.month, ini.day, fin_h, fin_min))
         prevkey = key
     
     print("Horarios disponibles (de hora de inicio mínima a hora de finalización máxima):")    
@@ -145,38 +145,38 @@ def disponible(intervalo,inidefault:tuple=(9,0),findefault:tuple=(21,30)):
     for k,v in horarios_disponibles.items():
         if not ("sábado" or "domingo") in k:
             texto += f"  •{k}:\n    "
-            for ini,fin in v:
-                if (ini.hour,ini.minute) == (inidefault.hour,inidefault.minute):
-                    ini_h,ini_min = ini.hour, ini.minute 
+            for ini, fin in v:
+                if (ini.hour, ini.minute) == (inidefault.hour, inidefault.minute):
+                    ini_h, ini_min = ini.hour, ini.minute 
                 elif ini.minute != 55:
-                    ini_h,ini_min = ini.hour, (ini.minute+5) 
+                    ini_h, ini_min = ini.hour, (ini.minute + 5) 
                 else:
-                    ini_h,ini_min = (ini.hour+1),0
-                if (fin.hour,fin.minute) == (findefault.hour,findefault.minute):
-                    fin_h,fin_min = fin.hour, fin.minute 
+                    ini_h, ini_min = (ini.hour + 1), 0
+                if (fin.hour, fin.minute) == (findefault.hour, findefault.minute):
+                    fin_h, fin_min = fin.hour, fin.minute 
                 elif fin.minute != 0:
-                    fin_h,fin_min = fin.hour, (fin.minute-5) 
+                    fin_h, fin_min = fin.hour, (fin.minute - 5) 
                 else:
-                    fin_h,fin_min = (fin.hour-1),55
+                    fin_h, fin_min = (fin.hour - 1), 55
                 texto += f"de {ini_h:02}:{ini_min:02} a {fin_h:02}:{fin_min:02}, "
         texto += "\n"
     texto = texto[0:-3]+"."
     print(texto)
-    with open ("C:\\Users\\Mariano\\Desktop\\horarios.json","w") as fb:
-        for día,intervalos in horarios_disponibles.items():
-            horarios_disponibles[día]=[(str(horario[0]),str(horario[1])) for horario in intervalos]
-        json.dump(horarios_disponibles,fb)
+    with open ("C:\\Users\\Mariano\\Desktop\\horarios.json","w") as fh:
+        for día, intervalos in horarios_disponibles.items():
+            horarios_disponibles[día]=[(str(horario[0]), str(horario[1])) for horario in intervalos]
+        json.dump(horarios_disponibles, fh)
 
     return horarios_disponibles
 
-def dic_alumnos(intervalo:tuple,precio=60):
+def dic_alumnos(intervalo:tuple, precio = 60):
     """ 
     Args:
-        intervalo: tupla (tmin,tmax) para establecer ventana de búsqueda en Google Calendar.
+        intervalo: tupla (tmin, tmax) para establecer ventana de búsqueda en Google Calendar.
         precio: precio por minuto de clase.
     Returns:
         alumnos: diccionario con nombre del o los alumnos (en caso de clase grupal) asociado a un objeto Event(). 
-        Event().clases = lista de tuplas (d,m,ini_h,ini_min,fin_h,fin_min,precio) para cada clase.
+        Event().clases = lista de tuplas (d, m, ini_h, ini_min, fin_h, fin_min, precio) para cada clase.
     """
     page_token = None
     tmin,tmax = intervalo
@@ -184,13 +184,13 @@ def dic_alumnos(intervalo:tuple,precio=60):
     while True:
         api = "calendar"
         creds = glogin(api)
-        calendar = get_service(creds,api)
+        calendar = get_service(creds, api)
         events = calendar.events().list(
-                                        calendarId='primary',
-                                        timeMin=tmin,
-                                        timeMax=tmax,
+                                        calendarId ='primary',
+                                        timeMin = tmin,
+                                        timeMax = tmax,
                                         singleEvents=True,
-                                        orderBy='startTime',
+                                        orderBy = 'startTime',
                                         pageToken = page_token
                                         ).execute()
 
@@ -202,15 +202,15 @@ def dic_alumnos(intervalo:tuple,precio=60):
         page_token = events.get('nextPageToken', None)
 
         for i in lista_eventos:
-            evento = Event(i,precio)
+            evento = Event(i, precio)
             nombre = evento.nombre
             if "Clase" in nombre:
-                alumnos.setdefault(nombre.split("Clase ")[1],evento).agrega_clase(
-                                                                                evento.ini_d,evento.ini_m,
-                                                                                evento.ini_h,evento.ini_min,
-                                                                                evento.fin_h,evento.fin_min, 
-                                                                                evento.precio
-                                                                                )
+                alumnos.setdefault(nombre.split("Clase ")[1], evento).agrega_clase(
+                                                                                    evento.ini_d, evento.ini_m,
+                                                                                    evento.ini_h, evento.ini_min,
+                                                                                    evento.fin_h, evento.fin_min, 
+                                                                                    evento.precio
+                                                                                    )
 
         if page_token is None:
             break
@@ -222,7 +222,7 @@ def info_alumnos(intervalo:tuple):
     Pide al usuario lista de alumnos o enter para mostrar todos.
     
     Args:
-        intervalo: tupla (tmin,tmax) para establecer ventana de búsqueda en Google Calendar.
+        intervalo: tupla (tmin, tmax) para establecer ventana de búsqueda en Google Calendar.
     Prints:
         lista de alumnos con sus clases, el precio de cada una, la suma total del alumno y la suma total de todos los alumnos.
     Returns:
@@ -238,7 +238,7 @@ def info_alumnos(intervalo:tuple):
         lista_alumnos = alumnos.keys()
 
     for alumno in lista_alumnos:
-        datos = alumnos.get(alumno,None)
+        datos = alumnos.get(alumno, None)
         grupal = False
         if not datos:
             for clase, datos in alumnos.items():             
@@ -251,7 +251,7 @@ def info_alumnos(intervalo:tuple):
                 continue
         print(f"--------------------------------------------\n{datos.nombre}:")
         for clase in datos.clases:
-            día,mes,ini_h,ini_min,fin_h,fin_min,precio=clase
+            día, mes, ini_h, ini_min, fin_h, fin_min, precio = clase
             if grupal:
                 precio /= 2
             print(f"Clase del {día:02}/{mes:02} de {ini_h:02}:{ini_min:02} a {fin_h:02}:{fin_min:02} --> ${precio:.0f}")
@@ -266,7 +266,7 @@ def info_alumnos(intervalo:tuple):
 def calc_ingresos(intervalo:tuple):
     """
     Args:
-        intervalo: tupla (tmin,tmax) para establecer ventana de búsqueda en Google Calendar.
+        intervalo: tupla (tmin, tmax) para establecer ventana de búsqueda en Google Calendar.
     Prints:
         plata correspondiente al intervalo, basada en los eventos de Google Calendar.
 
@@ -274,18 +274,18 @@ def calc_ingresos(intervalo:tuple):
     precio = input ("Precio de la hora o enter para usar el valor por defecto.\n")
     if len(precio) != 0:
         try:
-            precio = eval(precio)/60
+            precio = eval(precio) / 60
         except:
             print("La cagaste, precio establecido por defecto.\n")
             precio = 60
-        alumnos = dic_alumnos(intervalo,precio)
+        alumnos = dic_alumnos(intervalo, precio)
     else:
         alumnos = dic_alumnos(intervalo)
     plata = []
     for alumno in alumnos.values():
         for clase in alumno.clases:
             plata.append(clase[6])
-    print (f"Total: ${sum(plata):.0f}.\n")
+    print(f"Total: ${sum(plata):.0f}.\n")
 
 def main():
     while True: 
