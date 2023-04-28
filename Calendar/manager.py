@@ -9,15 +9,15 @@ from event import Event
 días = {0:"lunes", 1:"martes", 2:"miércoles", 3:"jueves", 4:"viernes", 5:"sábado", 6:"domingo"}
 
 def n2a(datetime:dt):
-    "toma un datetime y lo hace offset aware para Arg"
+    "abrev. de 'naive to aware' - toma un datetime y lo hace offset aware para Arg"
     return datetime.replace(tzinfo=tz(delta(hours=-3)))
 
 def s2d(datetime:str):
-    "wrapper para datetime.datetime.fromisoformat()"
+    "abrev. de 'string_to_date' - wrapper para datetime.datetime.fromisoformat()"
     return dt.fromisoformat(datetime)
 
 def t2d(datetime:tuple):
-    "(año,mes,día,hora,minuto) -> offset aware datetime para Arg"
+    "abrev. de 'tuple_to_date' - (año,mes,día,hora,minuto) -> offset aware datetime para Arg"
     return n2a(dt(datetime[0],datetime[1],datetime[2],datetime[3],datetime[4]))
 
 def tinter():
