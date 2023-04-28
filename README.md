@@ -7,3 +7,4 @@ Un programa que escribí y uso cotidianamente. Accede a mi calendario de Google 
 *calcular ingresos en determinado rango de días.
 
 Empaqueté la autenticación con los servidores de google (usando google-api-client-library) en una función a la que le das los scopes y hace lo suyo, para usar en otros programas que también la necesitan.
+Solo funciona en mi máquina porque los paths a los módulos están hardcodeados, pero cambiando dos boludeces se puede adaptar.
