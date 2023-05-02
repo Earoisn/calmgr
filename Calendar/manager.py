@@ -6,8 +6,6 @@ sys.path.extend(["D:\\code\\gcloud","D:\\code\\gcloud\\Calendar"])
 from Google import glogin, get_service
 
 
-días = {0: "lunes", 1: "martes", 2: "miércoles", 3: "jueves", 4: "viernes", 5: "sábado", 6: "domingo"}
-
 def n2a(datetime:dt):
     "abrev. de 'naive to aware' - toma un datetime y lo hace offset aware para Arg"
     return datetime.replace(tzinfo=tz(delta(hours=-3)))
@@ -104,6 +102,7 @@ def disponible(intervalo, inidefault:tuple=(9,0), findefault:tuple=(21,30)):
     Prints:
         Los resultados en formato amigable
     """
+    días = {0: "lunes", 1: "martes", 2: "miércoles", 3: "jueves", 4: "viernes", 5: "sábado", 6: "domingo"}
     cambiar = input("Cambiar hora de inicio y finalización del día laboral? Espacio para cambiar, enter para seguir.\n")
     if len(cambiar) != 0:
         try:
