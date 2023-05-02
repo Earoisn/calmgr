@@ -241,7 +241,7 @@ def info_alumnos(intervalo:tuple):
         grupal = False
         if not datos:
             for clase, datos in alumnos.items():             
-                if alumno in clase and "y" in clase:
+                if (alumno and "y") in clase:
                     print(f"\n{alumno} está en una clase grupal:")
                     grupal = True
                     break
