@@ -37,20 +37,3 @@ class Event:
     
     def agrega_clase(self, d, m, ini_h, ini_min, fin_h, fin_min, precio):
         self.clases.append((d, m, ini_h, ini_min, fin_h, fin_min, precio))
-
-# with open ("Calendar\\eventos.json", "r") as lista_eventos:
-#     lista_eventos = json.load(lista_eventos)
-#     alumnos = dict()
-#     for i in lista_eventos:
-#         evento = Event(i)
-#         if evento.es_clase:
-#             clase = evento
-#             for alumno in clase.alumno:
-#                 alumnos.setdefault(alumno, evento).agrega_clase(
-#                                                                 evento.ini_d, evento.ini_m,
-#                                                                 evento.ini_h, evento.ini_min,
-#                                                                 evento.fin_h, evento.fin_min, 
-#                                                                 evento.precio
-#                                                                 )
-# for k, v in alumnos.items():
-#     print(f"{k}: {v.clases}")

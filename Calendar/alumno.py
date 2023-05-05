@@ -92,4 +92,4 @@ class Listado:
 # lista = Listado(alumnos)
 # Listado.save(lista)
 # lista = Listado.load()
-# print(type(lista.alumnos), lista.alumnos)
+# print(lista.alumnos)
