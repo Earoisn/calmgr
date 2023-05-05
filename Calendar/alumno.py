@@ -26,7 +26,8 @@ class Listado:
             return
 
     def agregar_alumno(nombre: str = None, 
-                       fecha_pago: tuple = (dt.now().year, dt.now().month, dt.now().day, 0, 0), data_fiscal: str = "Consumidor Final"):
+                       fecha_pago: tuple = (dt.now().year, dt.now().month, dt.now().day, 0, 0), 
+                       data_fiscal: str = "Consumidor Final"):
         listado = Listado.load()
         if listado.alumnos.get(nombre):
             print("El alumno ya se encuentra en la base.")
