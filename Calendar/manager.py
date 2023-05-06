@@ -23,7 +23,7 @@ def d2t(datetime:dt):
     "abrev. de 'date_to_tuple' - datetime -> (año, mes, día, hora, minuto)"
     return (datetime.year, datetime.month, datetime.day, datetime.hour, datetime.minute)
 
-def buscar(mod = False, base = Listado.load().alumnos):
+def buscar(mod = False, base = None):
     """
     Pide al usuario lista de alumnos separados por coma, pero acepta a partir de una letra para buscar en la base de datos si existen coincidencias.
     En caso de tipear los nombres completos, devuelve la lista, de lo contrario, ofrece las posibilidades para elegir.
@@ -39,7 +39,8 @@ def buscar(mod = False, base = Listado.load().alumnos):
             a) se comete un error al poner números separados por coma
             b) se deja vacía la selección.
     """
-
+    if not base:
+        base = Listado.load().alumnos
     buscar = input("Nombres separados por coma, puede buscar a partir de una sola letra.\nSi es para asentar un pago o para modificar la base de datos, introducir un solo nombre.\n")
     nombres = [nombre.strip().capitalize() for nombre in buscar.split(",")]
     encontrados = [nombre for nombre in base.keys() for b in nombres if nombre.startswith(b)]
