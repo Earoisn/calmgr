@@ -19,9 +19,12 @@ class Listado:
     def __init__(self,base = dict()):
         self.alumnos = base
     
-    def load():
-        with open("D:\\code\\gcloud\\Calendar\\base.pickle", "rb") as b:
+    def load(base = None):
+        if not base:
+            base = "base"
+        with open(f"D:\\code\\gcloud\\Calendar\\{base}.pickle", "rb") as b:
             lista = pickle.load(b)
+
             return lista
     
     def save(base):
