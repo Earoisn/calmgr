@@ -395,7 +395,9 @@ def main():
                                         
                     case "p":
                         alumno = buscar()
-                        if not len(alumno) == 1: continue
+                        if not len(alumno) == 1: 
+                            print("La cagaste. Te dije que pusieras uno solo.\n")
+                            continue
                         
                         fecha = input("Espacio para introducir fecha de último pago, enter para fecha actual.\n")
                         if fecha != "":
@@ -404,26 +406,32 @@ def main():
                                 Listado.pago(alumno[0], (m, d))
                                 continue
                             except:
-                                print("La cagaste.\n")
+                                print("La cagaste. eran número de día y número de mes separados con coma.\n")
+                                continue
                         
                         Listado.pago(alumno[0])
                         continue
                     
                     case "m":
-                        opt = input("Espacio para agregar, enter para eliminar.\n")
-                        if opt == " ":
+                        opt = input("Espacio para eliminar, enter para agregar.\n")
+                        if opt == "":
                             alumno = buscar(mod=True)
-                            if not len(alumno) == 1: continue
+                            if not len(alumno) == 1:
+                                print("La cagaste. Te dije que pusieras uno solo.\n")
+                                continue
                             data = input("Espacio para ingresar data fiscal, enter para 'Consumidor Final'.\n")
                             if data == " ":
+                                nombre = input("Nombre y apellido: \n")
                                 cuit = input("CUIT sin guiones ni espacios: \n")
                                 cond = input("Condición frente al IVA: \n")
-                                data = cuit + " " + cond
+                                data = f"{nombre}, {cond}, CUIT: {cuit}"
                             else:
                                 data = "Consumidor Final"
                             Listado.agregar_alumno(alumno[0], data_fiscal = data)
-                        elif opt == "":
+                        elif opt == " ":
                             alumno = buscar()
+                            if not alumno:
+                                continue
                             ok = input(f"Seguro que deseás eliminar a {alumno[0]}? Escribí 'sí' para confirmar.\n")
                             if ok == "sí":
                                 Listado.eliminar_alumno(alumno[0])
