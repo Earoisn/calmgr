@@ -325,23 +325,27 @@ def main():
                     opt = input("[c]onsulta manual, [d]euda, [p]ago, [m]odificar listado.\n")
                 
                 match opt:
+
                     case "c":
                         consulta = "x"
                         while consulta not in "cd":
-                            consulta = input("[d]ata fiscal, [c]lases. \n")
-                        if consulta == "d":
-                            dic = Listado.load()
-                            alumno = input("Alumno: ")
-                            alumno = alumno.capitalize()
-                            data = dic.alumnos.get(alumno)
-                            if not data:
-                                print (f"No se econtró información de {alumno} en la base.\n")
-                                return None
-                            else:
-                                print(data.get("data_fiscal"))
-                            continue
-                        if consulta == "c":
-                            intervalo = tinter()
+                            consulta = input("[d]ata fiscal y último pago, [c]lases. \n")
+                        match consulta:
+                            case "d":
+                                dic = Listado.load().alumnos
+                                alumno = input("Alumno: ")
+                                if alumno != "":
+                                    alumno = alumno.capitalize()
+                                    data = dic.get(alumno)
+                                    if not data:
+                                        print (f"No se econtró información de {alumno} en la base.\n")
+                                        return None
+                                    dic = {alumno:data}
+                                for alumno, datos in dic.items():
+                                    print(f"{alumno}\nData fiscal: {datos.get('data_fiscal')}\nFecha de pago: {t2d(datos.get('fecha_pago')).strftime('%d/%m/%Y')}")
+                                continue
+                            case "c":
+                                intervalo = tinter()
                     
                     case "d":
                         base = Listado.load()
