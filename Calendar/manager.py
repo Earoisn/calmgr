@@ -23,6 +23,53 @@ def d2t(datetime:dt):
     "abrev. de 'date_to_tuple' - datetime -> (año, mes, día, hora, minuto)"
     return (datetime.year, datetime.month, datetime.day, datetime.hour, datetime.minute)
 
+def buscar(mod = False, base = Listado.load().alumnos):
+    """
+    Pide al usuario lista de alumnos separados por coma, pero acepta a partir de una letra para buscar en la base de datos si existen coincidencias.
+    En caso de tipear los nombres completos, devuelve la lista, de lo contrario, ofrece las posibilidades para elegir.
+    
+    Args:
+        base: diccionario con datos de los alumnos - Listado.load().alumnos por defecto.
+    
+    Returns:
+        lista con los nombres completos de los alumnos | 
+        lista vacía cuando: 
+        1) no hay coincidencias 
+        2) en la selección de coincidencias:
+            a) se comete un error al poner números separados por coma
+            b) se deja vacía la selección.
+    """
+
+    buscar = input("Nombres separados por coma, puede buscar a partir de una sola letra.\nSi es para asentar un pago o para modificar la base de datos, introducir un solo nombre.\n")
+    nombres = [nombre.strip().capitalize() for nombre in buscar.split(",")]
+    encontrados = [nombre for nombre in base.keys() for b in nombres if nombre.startswith(b)]
+    exactos = [nombre for nombre in base.keys() for b in nombres if nombre == b]
+    
+    if mod: return nombres
+
+    if len(encontrados) == 0:
+        print("No se encontró información para está búsqueda en la base de datos.")
+        return []
+    
+    elif len(encontrados) == len(exactos):
+        return encontrados
+
+    else:
+        print("Posibles coincidencias:")
+        for i, alumno in enumerate(encontrados):
+            print(f"{i+1}. {alumno}")
+
+        selec = input("Números separados por coma.\n")
+        if selec == "": return []
+        try:
+            selec = [int(n.strip()) for n in selec.split(",")]
+        except:
+            print("La cagaste.")
+            return []
+        alumnos = [encontrados[n-1] for n in selec]
+
+    return alumnos
+
 def tinter(deuda = None):
     """
     Pide al usuario día, mes y año o toma fecha actual y cantidad de días por delante.
@@ -243,13 +290,9 @@ def info_alumnos(intervalo:tuple, base = None):
     plata = list()
     total = []
     alumnos = dic_alumnos(intervalo)
-    lista_alumnos = input("Alumnos separados por coma.\n")
-    if len(lista_alumnos) != 0:
-        lista_alumnos = [alumno.strip().capitalize() for alumno in lista_alumnos.split(",")]
-    else:
+    lista_alumnos = buscar()
+    if not lista_alumnos:
         lista_alumnos = alumnos.keys()
-        for i in lista_alumnos:
-            print(i)
 
     encontrado = False
     for alumno in lista_alumnos:
@@ -332,16 +375,14 @@ def main():
                             consulta = input("[d]ata fiscal y último pago, [c]lases. \n")
                         match consulta:
                             case "d":
-                                dic = Listado.load().alumnos
-                                alumno = input("Alumno: ")
-                                if alumno != "":
-                                    alumno = alumno.capitalize()
-                                    data = dic.get(alumno)
-                                    if not data:
-                                        print (f"No se econtró información de {alumno} en la base.\n")
-                                        return None
-                                    dic = {alumno:data}
-                                for alumno, datos in dic.items():
+                                diccionario = Listado.load().alumnos
+                                alumno = buscar(base = diccionario)
+                                if alumno:
+                                    diccionario = {nombre: diccionario.get(nombre) for nombre in alumno}
+                                else:
+                                    opt = input("Espacio para mostrar los datos de todos los alumnos, enter para continuar.\n")
+                                    if opt == "": continue
+                                for alumno, datos in diccionario.items():
                                     print(f"{alumno}\nData fiscal: {datos.get('data_fiscal')}\nFecha de pago: {t2d(datos.get('fecha_pago')).strftime('%d/%m/%Y')}")
                                 continue
                             case "c":
@@ -353,24 +394,26 @@ def main():
                         intervalo = tinter(d2t(tmin))
                                         
                     case "p":
-                        alumno = input("nombre del alumno.\n")
-                        alumno = alumno.capitalize()
+                        alumno = buscar()
+                        if not len(alumno) == 1: continue
+                        
                         fecha = input("Espacio para introducir fecha de último pago, enter para fecha actual.\n")
                         if fecha != "":
                             try:
                                 d, m = eval(input("día, mes: "))
-                                Listado.pago(alumno, (m, d))
+                                Listado.pago(alumno[0], (m, d))
                                 continue
                             except:
                                 print("La cagaste.\n")
-                        Listado.pago(alumno)
+                        
+                        Listado.pago(alumno[0])
                         continue
                     
                     case "m":
-                        alumno = input("Alumno: ")
-                        alumno = alumno.capitalize()
                         opt = input("Espacio para agregar, enter para eliminar.\n")
                         if opt == " ":
+                            alumno = buscar(mod=True)
+                            if not len(alumno) == 1: continue
                             data = input("Espacio para ingresar data fiscal, enter para 'Consumidor Final'.\n")
                             if data == " ":
                                 cuit = input("CUIT sin guiones ni espacios: \n")
@@ -378,10 +421,15 @@ def main():
                                 data = cuit + " " + cond
                             else:
                                 data = "Consumidor Final"
-                            Listado.agregar_alumno(alumno, data)
+                            Listado.agregar_alumno(alumno[0], data_fiscal = data)
+                        elif opt == "":
+                            alumno = buscar()
+                            ok = input(f"Seguro que deseás eliminar a {alumno[0]}? Escribí 'sí' para confirmar.\n")
+                            if ok == "sí":
+                                Listado.eliminar_alumno(alumno[0])
                         else:
-                            Listado.eliminar_alumno(alumno)
-                        
+                            print("Reiniciando.")
+                                                    
                         continue
 
                 if not intervalo:
@@ -395,9 +443,7 @@ def main():
 
             case "c":
                 calc_ingresos(intervalo)
-        
-        terminar = input("Espacio para volver a usar, enter para terminar.\n")
-        if len(terminar) == 0: break
+
 
 if __name__ == '__main__':
     main()

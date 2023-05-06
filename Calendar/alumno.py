@@ -5,10 +5,14 @@ class Listado:
     """
     Clase utilizada para modificar la base de datos de alumnos. Puede agregar o borrar a un alumno y puede modificar la última fecha de pago o la data fiscal.
     Methods:
+
         load(): carga del directorio predeterminado y devuelve la base de datos como un objeto de esta clase
-        save(base): guarda el objeto que se pasa como argumento en el directorio por defecto, sobreescribiendo el anterior.
+
+        save(base): guarda el objeto que se pasa como argumento en el directorio por defecto, sobreescribiendo el anterior. Crea un backup que también se sobreescribirá con la próxima modificación.
+
         agregar_alumno(nombre, fecha de último pago (yyyy,m,d,H,M), data_fiscal en str)
         eliminar_alumno(nombre)
+
         pago(alumno[, (yyyy,m,d)]) asigna la fecha actual o la tupla opcional como último pago.
     """
 
@@ -21,6 +25,10 @@ class Listado:
             return lista
     
     def save(base):
+        backup = Listado.load()
+        with open("D:\\code\\gcloud\\Calendar\\base_backup.pickle", "wb") as b:
+            pickle.dump(backup, b)
+            print("Se hizo un backup de la base.")
         with open("D:\\code\\gcloud\\Calendar\\base.pickle", "wb") as b:
             pickle.dump(base, b)
             return
