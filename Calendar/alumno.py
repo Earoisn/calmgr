@@ -1,6 +1,7 @@
 from datetime import datetime as dt
 import pickle
 
+
 class Listado:
     """
     Clase utilizada para modificar la base de datos de alumnos. Puede agregar o borrar a un alumno y puede modificar la última fecha de pago o la data fiscal.
@@ -22,51 +23,68 @@ class Listado:
     def load(base = None):
         if not base:
             base = "base"
+        
         with open(f"D:\\code\\gcloud\\Calendar\\{base}.pickle", "rb") as b:
             lista = pickle.load(b)
 
             return lista
     
+    
     def save(base):
         backup = Listado.load()
+        
         with open("D:\\code\\gcloud\\Calendar\\base_backup.pickle", "wb") as b:
             pickle.dump(backup, b)
             print("Se hizo un backup de la base.")
+        
         with open("D:\\code\\gcloud\\Calendar\\base.pickle", "wb") as b:
             pickle.dump(base, b)
             return
 
-    def agregar_alumno(nombre: str = None, 
-                       fecha_pago: tuple = (dt.now().year, dt.now().month, dt.now().day, 0, 0), 
-                       data_fiscal: str = "Consumidor Final"):
+    
+    def agregar_alumno(
+        nombre: str = None, 
+        fecha_pago: tuple = (dt.now().year, dt.now().month, dt.now().day, 0, 0), 
+        data_fiscal: str = "Consumidor Final"
+    ):
         listado = Listado.load()
+       
         if listado.alumnos.get(nombre):
             print("El alumno ya se encuentra en la base.")
             return None
+        
         if not nombre:
             return None
+        
         listado.alumnos[nombre] = {"fecha_pago": fecha_pago, "data_fiscal": data_fiscal}
         Listado.save(listado)
     
+    
     def eliminar_alumno(nombre: str):
         listado = Listado.load()
+        
         if not listado.alumnos.get(nombre):
             print("El alumno no se encuentra en la base.")
             return None
+        
         del listado.alumnos[nombre]
         print(f"Se eliminó a {nombre} de la base.")
         Listado.save(listado)
 
+    
     def pago(nombre,fecha = None):
         listado = Listado.load()
         y = dt.now().year
+        
         if not listado.alumnos.get(nombre):
             print("El alumno no se encuentra en la base.")
             return None
+        
         if not fecha:
             m,d = dt.now().month, dt.now().day
         else:
             m,d = fecha
+        
         listado.alumnos[nombre]["fecha_pago"] = (y,m,d,0,0)
         Listado.save(listado)
         print("Guardado.")

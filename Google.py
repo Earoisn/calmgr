@@ -5,11 +5,11 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 import os.path
 
+
 def glogin(*scopes):
     SCOPES = [f'https://www.googleapis.com/auth/{scope}' for scope in scopes]
-    # Si se modifican los SCOPES hay que borrar token.json
-
     creds = None
+    
     if os.path.exists('D:\\code\\gcloud\\token.json'):
         creds = Credentials.from_authorized_user_file('D:\\code\\gcloud\\token.json', SCOPES)
 
@@ -22,6 +22,7 @@ def glogin(*scopes):
                 print("Error al refrescar el token, eliminando token.json")
                 os.remove('D:\\code\\gcloud\\token.json')
                 creds = None
+        
         if not creds:
             print("No había credenciales o no pudo refrescarse el token")
             flow = InstalledAppFlow.from_client_secrets_file(
@@ -33,11 +34,12 @@ def glogin(*scopes):
     
     return creds
 
+
 def get_service(creds, api):
     v = {"calendar":"v3","drive":"v1"}
+    
     try:
         service = build(f'{api}', f'{v[api]}', credentials = creds)
-
     except HttpError as error:
         return f'error: {error}'
     

@@ -7,21 +7,26 @@ sys.path.extend(["D:\\code\\gcloud","D:\\code\\gcloud\\Calendar"])
 from Google import glogin, get_service
 from alumno import Listado
 
+
 def n2a(datetime:dt):
     "abrev. de 'naive to aware' - toma un datetime y lo hace offset aware para Arg"
     return datetime.replace(tzinfo=tz(delta(hours=-3)))
+
 
 def s2d(datetime:str):
     "abrev. de 'string_to_date' - wrapper para datetime.datetime.fromisoformat()"
     return dt.fromisoformat(datetime)
 
+
 def t2d(datetime:tuple):
     "abrev. de 'tuple_to_date' - (año, mes, día, hora, minuto) -> offset aware datetime para Arg"
     return n2a(dt(datetime[0], datetime[1], datetime[2], datetime[3], datetime[4]))
 
+
 def d2t(datetime:dt):
     "abrev. de 'date_to_tuple' - datetime -> (año, mes, día, hora, minuto)"
     return (datetime.year, datetime.month, datetime.day, datetime.hour, datetime.minute)
+
 
 def buscar(mod = False, base = None):
     """
@@ -39,8 +44,10 @@ def buscar(mod = False, base = None):
             a) se comete un error al poner números separados por coma
             b) se deja vacía la selección.
     """
+    
     if not base:
         base = Listado.load().alumnos
+    
     buscar = input("Nombres separados por coma, puede buscar a partir de una sola letra.\nSi es para asentar un pago o para modificar la base de datos, introducir un solo nombre.\n")
     nombres = [nombre.strip().capitalize() for nombre in buscar.split(",")]
     encontrados = [nombre for nombre in base.keys() for b in nombres if nombre.startswith(b)]
@@ -51,25 +58,28 @@ def buscar(mod = False, base = None):
     if len(encontrados) == 0:
         print("No se encontró información para está búsqueda en la base de datos.")
         return []
-    
     elif len(encontrados) == len(exactos):
         return encontrados
-
     else:
         print("Posibles coincidencias:")
+        
         for i, alumno in enumerate(encontrados):
             print(f"{i+1}. {alumno}")
 
         selec = input("Números separados por coma.\n")
+        
         if selec == "": return []
+        
         try:
             selec = [int(n.strip()) for n in selec.split(",")]
         except:
             print("La cagaste.")
             return []
+        
         alumnos = [encontrados[n-1] for n in selec]
 
     return alumnos
+
 
 def tinter(deuda = None):
     """
@@ -87,9 +97,11 @@ def tinter(deuda = None):
         else:
             día, mes, año = eval(fecha)
             if año < 100: año += 2000
+        
         return (día, mes, año)
     
     ahora = n2a(dt.now())
+    
     if deuda:
         desde = t2d(deuda)
     else:
@@ -102,6 +114,7 @@ def tinter(deuda = None):
             desde = ahora
     
     hasta = input("Dejar un espacio para cambiar fecha final, enter para fecha actual.\n")
+    
     if hasta == " ":
         fecha = input("Espacio para fecha, enter para días\n")
         if fecha == " ":
@@ -121,9 +134,12 @@ def tinter(deuda = None):
         if (hasta - desde).total_seconds() <= 0:
             print("La cagaste. Las fechas de inicio y finalización son iguales o la ventana temporal es negativa.")
             return None
+    
     tmax = hasta.isoformat()
     tmin = desde.isoformat()
+    
     return (tmin, tmax)
+
 
 def freebusy(intervalo:tuple):
     """
@@ -134,22 +150,26 @@ def freebusy(intervalo:tuple):
         o
         None, si no había eventos.
     """
+    
     tmin, tmax = intervalo
     api = 'calendar'
     creds = glogin(api)
     calendar = get_service(creds, api)
-    events_busy = calendar.freebusy().query(body={
-                                        "items": [{'id': 'primary'}],
-                                        "timeMax": tmax,
-                                        "timeMin": tmin,
-                                        "timeZone": "America/Argentina/Buenos_Aires"
-                                        }).execute()
+    events_busy = calendar.freebusy().query(
+        body={
+            "items": [{'id': 'primary'}],
+            "timeMax": tmax,
+            "timeMin": tmin,
+            "timeZone": "America/Argentina/Buenos_Aires"
+        }
+    ).execute()
 
     if not events_busy:
         print('No hay eventos.')
         return None
     else:
         return events_busy
+
 
 def disponible(intervalo, inidefault:tuple=(9,0), findefault:tuple=(21,30)):
     """
@@ -163,8 +183,10 @@ def disponible(intervalo, inidefault:tuple=(9,0), findefault:tuple=(21,30)):
     Prints:
         Los resultados en formato amigable
     """
+    
     días = {0: "lunes", 1: "martes", 2: "miércoles", 3: "jueves", 4: "viernes", 5: "sábado", 6: "domingo"}
     cambiar = input("Cambiar hora de inicio y finalización del día laboral? Espacio para cambiar, enter para seguir.\n")
+    
     if len(cambiar) != 0:
         try:
             ini_h, ini_min, fin_h, fin_min = eval(input("hora inicio, minuto inicio, hora fin, minuto fin. Todos números enteros.\n"))
@@ -180,31 +202,40 @@ def disponible(intervalo, inidefault:tuple=(9,0), findefault:tuple=(21,30)):
     anterior = None
     horarios_disponibles = {}
     ahora = n2a(dt.now())
+    
     for evento in events_busy:
         ini = s2d(evento["start"])
         fin = s2d(evento["end"])
+        
         if actual == None or ini.date() != actual:
             actual = ini.date()
             inidefault = t2d((ini.year, ini.month, ini.day, ini_h, ini_min))
+            
             if (ahora - inidefault).total_seconds() > 0:
                 inidefault = ahora
+            
             key = f"{días[actual.weekday()]} {actual.day}/{actual.month}"
             horarios_disponibles.setdefault(key, [])
+            
             if anterior != None and (findefault - anterior).total_seconds() / 60 > 60:
                 horarios_disponibles[prevkey].append((anterior, findefault))
+            
             if (ini - inidefault).total_seconds() / 60 > 60:
                 horarios_disponibles[key].append((inidefault, ini))
         elif (ini - anterior).total_seconds() / 60 > 60:
             horarios_disponibles[key].append((anterior, ini))
+        
         anterior = fin
         findefault = t2d((ini.year, ini.month, ini.day, fin_h, fin_min))
         prevkey = key
     
     print("Horarios disponibles (de hora de inicio mínima a hora de finalización máxima):")    
     texto = ""
+    
     for k,v in horarios_disponibles.items():
         if not ("sábado" or "domingo") in k:
             texto += f"  •{k}:\n    "
+            
             for ini, fin in v:
                 if (ini.hour, ini.minute) == (inidefault.hour, inidefault.minute):
                     ini_h, ini_min = ini.hour, ini.minute 
@@ -212,22 +243,28 @@ def disponible(intervalo, inidefault:tuple=(9,0), findefault:tuple=(21,30)):
                     ini_h, ini_min = ini.hour, (ini.minute + 5) 
                 else:
                     ini_h, ini_min = (ini.hour + 1), 0
+                
                 if (fin.hour, fin.minute) == (findefault.hour, findefault.minute):
                     fin_h, fin_min = fin.hour, fin.minute 
                 elif fin.minute != 0:
                     fin_h, fin_min = fin.hour, (fin.minute - 5) 
                 else:
                     fin_h, fin_min = (fin.hour - 1), 55
+                
                 texto += f"de {ini_h:02}:{ini_min:02} a {fin_h:02}:{fin_min:02}, "
+        
         texto += "\n"
+    
     texto = texto[0:-3]+"."
     print(texto)
+    
     with open("C:\\Users\\Mariano\\Desktop\\horarios.json","w") as fh:
         for día, intervalos in horarios_disponibles.items():
             horarios_disponibles[día]=[(str(horario[0]), str(horario[1])) for horario in intervalos]
         json.dump(horarios_disponibles, fh)
 
     return horarios_disponibles
+
 
 def dic_alumnos(intervalo:tuple, precio = 60):
     """ 
@@ -238,21 +275,23 @@ def dic_alumnos(intervalo:tuple, precio = 60):
         alumnos: diccionario con nombre del alumno asociado a un objeto Event(). 
         Event().clases = lista de tuplas (d, m, ini_h, ini_min, fin_h, fin_min, precio) para cada clase.
     """
+   
     page_token = None
     tmin, tmax = intervalo
     alumnos = dict()
+    
     while True:
         api = "calendar"
         creds = glogin(api)
         calendar = get_service(creds, api)
         events = calendar.events().list(
-                                        calendarId ='primary',
-                                        timeMin = tmin,
-                                        timeMax = tmax,
-                                        singleEvents = True,
-                                        orderBy = 'startTime',
-                                        pageToken = page_token
-                                        ).execute()
+            calendarId ='primary',
+            timeMin = tmin,
+            timeMax = tmax,
+            singleEvents = True,
+            orderBy = 'startTime',
+            pageToken = page_token
+        ).execute()
 
         if not events:
                 print('No hay eventos.')
@@ -263,19 +302,23 @@ def dic_alumnos(intervalo:tuple, precio = 60):
 
         for i in lista_eventos:
             evento = Event(i, precio)
+            
             if evento.es_clase:
                 clase = evento
+            
                 for alumno in clase.alumno:
                     alumnos.setdefault(alumno, evento if not clase.es_grupal else deepcopy(evento)).agrega_clase(
-                                evento.ini_d, evento.ini_m,
-                                evento.ini_h, evento.ini_min,
-                                evento.fin_h, evento.fin_min, 
-                                evento.precio
-                                )
+                        evento.ini_d, evento.ini_m,
+                        evento.ini_h, evento.ini_min,
+                        evento.fin_h, evento.fin_min, 
+                        evento.precio
+                    )
 
         if page_token is None:
             break
+    
     return alumnos
+
 
 def info_alumnos(intervalo:tuple, base = None):
     """
@@ -288,39 +331,50 @@ def info_alumnos(intervalo:tuple, base = None):
     Returns:
         dic_alumnos(intervalo)
     """
+    
     plata = list()
     total = []
     alumnos = dic_alumnos(intervalo)
     lista_alumnos = buscar()
+    
     if not lista_alumnos:
         lista_alumnos = alumnos.keys()
 
     encontrado = False
+    
     for alumno in lista_alumnos:
         datos = alumnos.get(alumno, None)
+        
         if not datos:
             print(f"No se encontró información de {alumno} en el calendario.\n")
             continue
+        
         encontrado = True
         print(f"--------------------------------------------\n{alumno}:")
+        
         for clase in datos.clases:
             día, mes, ini_h, ini_min, fin_h, fin_min, precio = clase
+            
             if base:
                 if not base.alumnos.get(alumno):
                     print (f"No se encontró información de {alumno} en la base, comprobá manualmente su situación.")
                     break
+            
                 if t2d((dt.now().year,mes,día,ini_h,ini_min)) < t2d(base.alumnos[alumno]["fecha_pago"]):
                     continue
+            
             print(f"Clase del {día:02}/{mes:02} de {ini_h:02}:{ini_min:02} a {fin_h:02}:{fin_min:02} --> ${precio:.0f}")
             plata.append(precio)
         
         print(f"Total: ${sum(plata):.0f}.\n--------------------------------------------\n")
         total.extend(plata)
         plata.clear()
+    
     if encontrado:
         print(f"Total final: ${sum(total):.0f}")
 
     return alumnos
+
 
 def calc_ingresos(intervalo:tuple):
     """
@@ -331,6 +385,7 @@ def calc_ingresos(intervalo:tuple):
 
     """
     precio = input("Precio de la hora o enter para usar el valor por defecto.\n")
+    
     if len(precio) != 0:
         try:
             precio = eval(precio) / 60
@@ -340,23 +395,32 @@ def calc_ingresos(intervalo:tuple):
         alumnos = dic_alumnos(intervalo, precio)
     else:
         alumnos = dic_alumnos(intervalo)
+    
     plata = []
+    
     for alumno in alumnos.values():
         for clase in alumno.clases:
             plata.append(clase[6])
+    
     print(f"Total: ${sum(plata):.0f}.\n")
+
 
 def main():
     while True: 
         ejecutar = "x"    
+        
         while ejecutar not in "hac":
             ejecutar = input("[h]orarios | [a]lumnos | [c]alculadora de ingresos\n")
+        
         if len(ejecutar) == 0: break
+        
         if ejecutar != "a":
             intervalo = tinter()
+            
             if not intervalo:
                 print("Reiniciando script.\n")
                 continue
+        
         match ejecutar:
             
             case "h":
@@ -365,6 +429,7 @@ def main():
             case "a":
                 base = None
                 opt = "x"
+                
                 while opt not in "cdpm":
                     opt = input("[c]onsulta manual, [d]euda, [p]ago, [m]odificar listado.\n")
                 
@@ -372,20 +437,27 @@ def main():
 
                     case "c":
                         consulta = "x"
+                        
                         while consulta not in "cd":
                             consulta = input("[d]ata fiscal y último pago, [c]lases. \n")
+                        
                         match consulta:
+                            
                             case "d":
                                 diccionario = Listado.load().alumnos
                                 alumno = buscar(base = diccionario)
+                            
                                 if alumno:
                                     diccionario = {nombre: diccionario.get(nombre) for nombre in alumno}
                                 else:
                                     opt = input("Espacio para mostrar los datos de todos los alumnos, enter para continuar.\n")
                                     if opt == "": continue
+                            
                                 for alumno, datos in diccionario.items():
                                     print(f"{alumno}\nData fiscal: {datos.get('data_fiscal')}\nFecha de pago: {t2d(datos.get('fecha_pago')).strftime('%d/%m/%Y')}")
+                            
                                 continue
+                            
                             case "c":
                                 intervalo = tinter()
                     
@@ -396,18 +468,20 @@ def main():
                                         
                     case "p":
                         alumno = buscar()
+                        
                         if not len(alumno) == 1: 
                             print("La cagaste. Te dije que pusieras uno solo.\n")
                             continue
                         
                         fecha = input("Espacio para introducir fecha de último pago, enter para fecha actual.\n")
+                        
                         if fecha != "":
                             try:
                                 d, m = eval(input("día, mes: "))
                                 Listado.pago(alumno[0], (m, d))
                                 continue
                             except:
-                                print("La cagaste. eran número de día y número de mes separados con coma.\n")
+                                print("La cagaste. Eran número de día y número de mes separados con coma.\n")
                                 continue
                         
                         Listado.pago(alumno[0])
@@ -415,12 +489,16 @@ def main():
                     
                     case "m":
                         opt = input("Espacio para eliminar, enter para agregar.\n")
+                        
                         if opt == "":
-                            alumno = buscar(mod=True)
+                            alumno = buscar(mod = True)
+                            
                             if not len(alumno) == 1:
                                 print("La cagaste. Te dije que pusieras uno solo.\n")
                                 continue
+                            
                             data = input("Espacio para ingresar data fiscal, enter para 'Consumidor Final'.\n")
+                            
                             if data == " ":
                                 nombre = input("Nombre y apellido: \n")
                                 cuit = input("CUIT sin guiones ni espacios: \n")
@@ -428,12 +506,16 @@ def main():
                                 data = f"{nombre}, {cond}, CUIT: {cuit}"
                             else:
                                 data = "Consumidor Final"
+                            
                             Listado.agregar_alumno(alumno[0], data_fiscal = data)
                         elif opt == " ":
                             alumno = buscar()
+                            
                             if not alumno:
                                 continue
+                            
                             ok = input(f"Seguro que deseás eliminar a {alumno[0]}? Escribí 'sí' para confirmar.\n")
+                            
                             if ok == "sí":
                                 Listado.eliminar_alumno(alumno[0])
                         else:
