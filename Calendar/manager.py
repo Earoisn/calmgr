@@ -38,10 +38,13 @@ def buscar(mod = False, base = None):
     
     Returns:
         lista con los nombres completos de los alumnos | 
-        lista vacía cuando: 
-        1) no hay coincidencias 
+        lista vacía cuando:
+
+        1) no hay coincidencias
+
         2) en la selección de coincidencias:
             a) se comete un error al poner números separados por coma
+
             b) se deja vacía la selección.
     """
     
@@ -105,34 +108,62 @@ def tinter(deuda = None):
     if deuda:
         desde = t2d(deuda)
     else:
-        desde = input("Dejar un espacio para cambiar fecha inicial, enter para fecha actual.\n")
+        desde = input(
+            "Dejar un espacio para cambiar fecha inicial, enter para fecha actual.\n"
+        )
+
         if desde == " ":
             fecha = input("desde día, mes[, año]:\n")
             día, mes, año = check_fecha(fecha)
-            desde = ahora.replace(year = año, month = mes, day = día, hour = 0, minute = 0)     
+            desde = ahora.replace(
+                year = año, 
+                month = mes, 
+                day = día, 
+                hour = 0, 
+                minute = 0
+            )     
         else:
-            desde = ahora
-    
-    hasta = input("Dejar un espacio para cambiar fecha final, enter para fecha actual.\n")
+            desde = ahora    
+
+    if not desde == ahora:
+        hasta = input(
+            "Dejar un espacio para cambiar fecha final, enter para fecha actual.\n"
+        )
+    else:
+        hasta = " "
     
     if hasta == " ":
-        fecha = input("Espacio para fecha, enter para días\n")
+        fecha = input(
+            "Espacio para fecha final, enter para días desde la fecha inicial.\n"
+        )
+
         if fecha == " ":
             fecha = input("hasta día, mes[, año]:\n")
             día, mes, año = check_fecha(fecha)
-            hasta = ahora.replace(year=año, month=mes, day=día, hour= 0, minute= 0)
+            hasta = ahora.replace(
+                year=año, 
+                month=mes, 
+                day=día, 
+                hour= 0, 
+                minute= 0
+            )
         else:
             hasta = input("días\n")
             try:
                 hasta = int(hasta)
             except:
-                print("La cagaste, ventana de tiempo establecida por defecto a 10 días.\n")
+                print(
+                    "La cagaste, ventana de tiempo establecida por defecto a 10 días.\n"
+                )
                 hasta = 10
             hasta = desde + delta(hasta)
     else:
         hasta = ahora
         if (hasta - desde).total_seconds() <= 0:
-            print("La cagaste. Las fechas de inicio y finalización son iguales o la ventana temporal es negativa.")
+            print(
+                "La cagaste. Las fechas de inicio y finalización son iguales "\
+                + "o la ventana temporal es negativa."
+            )
             return None
     
     tmax = hasta.isoformat()
@@ -376,6 +407,25 @@ def info_alumnos(intervalo:tuple, base = None):
     return alumnos
 
 
+def data_pago():
+    diccionario = Listado.load().alumnos
+    alumno = buscar(base = diccionario)
+
+    if alumno:
+        diccionario = {nombre: diccionario.get(nombre) for nombre in alumno}
+    else:
+        opt = input(
+            "Espacio para mostrar los datos de todos los alumnos, "\
+            + "enter para continuar.\n"
+        )
+
+        if opt == "": return
+
+    for alumno, datos in diccionario.items():
+        print(f"{alumno}\nData fiscal: {datos.get('data_fiscal')}\nFecha de pago: {t2d(datos.get('fecha_pago')).strftime('%d/%m/%Y')}")
+    
+
+
 def calc_ingresos(intervalo:tuple):
     """
     Args:
@@ -444,18 +494,7 @@ def main():
                         match consulta:
                             
                             case "d":
-                                diccionario = Listado.load().alumnos
-                                alumno = buscar(base = diccionario)
-                            
-                                if alumno:
-                                    diccionario = {nombre: diccionario.get(nombre) for nombre in alumno}
-                                else:
-                                    opt = input("Espacio para mostrar los datos de todos los alumnos, enter para continuar.\n")
-                                    if opt == "": continue
-                            
-                                for alumno, datos in diccionario.items():
-                                    print(f"{alumno}\nData fiscal: {datos.get('data_fiscal')}\nFecha de pago: {t2d(datos.get('fecha_pago')).strftime('%d/%m/%Y')}")
-                            
+                                data_pago()
                                 continue
                             
                             case "c":
@@ -463,14 +502,20 @@ def main():
                     
                     case "d":
                         base = Listado.load()
-                        tmin = (min([t2d(v["fecha_pago"]) for v in base.alumnos.values()]))
+                        tmin = (
+                            min(
+                            [t2d(datos["fecha_pago"]) for datos in base.alumnos.values()]
+                            )
+                        )
                         intervalo = tinter(d2t(tmin))
                                         
                     case "p":
                         alumno = buscar()
                         
+                        if len(alumno) == 0: continue
+
                         if not len(alumno) == 1: 
-                            print("La cagaste. Te dije que pusieras uno solo.\n")
+                            print("La cagaste. Te dije uno solo.\n")
                             continue
                         
                         fecha = input("Espacio para introducir fecha de último pago, enter para fecha actual.\n")
