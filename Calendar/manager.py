@@ -30,8 +30,10 @@ def d2t(datetime:dt):
 
 def buscar(mod = False, base = None):
     """
-    Pide al usuario lista de alumnos separados por coma, pero acepta a partir de una letra para buscar en la base de datos si existen coincidencias.
-    En caso de tipear los nombres completos, devuelve la lista, de lo contrario, ofrece las posibilidades para elegir.
+    Pide al usuario lista de alumnos separados por coma, pero acepta a partir de una
+    letra para buscar en la base de datos si existen coincidencias.
+    En caso de tipear los nombres completos, devuelve la lista, de lo contrario, ofrece
+    las posibilidades para elegir.
     
     Args:
         base: diccionario con datos de los alumnos - Listado.load().alumnos por defecto.
@@ -51,7 +53,11 @@ def buscar(mod = False, base = None):
     if not base:
         base = Listado.load().alumnos
     
-    buscar = input("Nombres separados por coma, puede buscar a partir de una sola letra.\nSi es para asentar un pago o para modificar la base de datos, introducir un solo nombre.\n")
+    buscar = input(
+        "Nombres separados por coma, puede buscar a partir de una sola letra.\n"\
+        + "Si es para asentar un pago o para modificar la base de datos, "\
+        + "introducir un solo nombre.\n"
+    )
     nombres = [nombre.strip().capitalize() for nombre in buscar.split(",")]
     encontrados = [nombre for nombre in base.keys() for b in nombres if nombre.startswith(b)]
     exactos = [nombre for nombre in base.keys() for b in nombres if nombre == b]
@@ -206,13 +212,14 @@ def disponible(intervalo, inidefault:tuple=(9,0), findefault:tuple=(21,30)):
     """
     Args:
         events_busy: freebusy().query() de la API de Google Calendar,
-        inidefault: tupla (hora, minuto) para inicio default del día, 
-        findefault: tupla (hora,minuto) para fin default del día 
+        inidefault: tupla (hora, minuto) para inicio default del día,
+        findefault: tupla (hora,minuto) para fin default del día
+
     Returns:
-        json en el escritorio con horarios disponibles: {'día de la semana d/m':[(datetime inicio, datetime fin)...]} 
-        para intervalos de tiempo libre de 60 minutos o más, dejando 5 minutos libres entre eventos.
+        .txt en el escritorio con horarios disponibles
+
     Prints:
-        Los resultados en formato amigable
+        horarios disponibles.
     """
     
     días = {0: "lunes", 1: "martes", 2: "miércoles", 3: "jueves", 4: "viernes", 5: "sábado", 6: "domingo"}
@@ -260,8 +267,8 @@ def disponible(intervalo, inidefault:tuple=(9,0), findefault:tuple=(21,30)):
         findefault = t2d((ini.year, ini.month, ini.day, fin_h, fin_min))
         prevkey = key
     
-    print("Horarios disponibles (de hora de inicio mínima a hora de finalización máxima):")    
-    texto = ""
+    texto = "Horarios disponibles (de hora de inicio mínima "\
+            + "a hora de finalización máxima):\n"    
     
     for k,v in horarios_disponibles.items():
         if not ("sábado" or "domingo") in k:
@@ -289,10 +296,8 @@ def disponible(intervalo, inidefault:tuple=(9,0), findefault:tuple=(21,30)):
     texto = texto[0:-3]+"."
     print(texto)
     
-    with open("C:\\Users\\Mariano\\Desktop\\horarios.json","w") as fh:
-        for día, intervalos in horarios_disponibles.items():
-            horarios_disponibles[día]=[(str(horario[0]), str(horario[1])) for horario in intervalos]
-        json.dump(horarios_disponibles, fh)
+    with open("C:\\Users\\Mariano\\Desktop\\horarios.txt","w") as fh:
+        fh.write(texto)
 
     return horarios_disponibles
 
@@ -302,6 +307,7 @@ def dic_alumnos(intervalo:tuple, precio = 60):
     Args:
         intervalo: tupla (tmin, tmax) para establecer ventana de búsqueda en Google Calendar.
         precio: precio por minuto de clase.
+
     Returns:
         alumnos: diccionario con nombre del alumno asociado a un objeto Event(). 
         Event().clases = lista de tuplas (d, m, ini_h, ini_min, fin_h, fin_min, precio) para cada clase.
@@ -357,8 +363,10 @@ def info_alumnos(intervalo:tuple, base = None):
     
     Args:
         intervalo: tupla (tmin, tmax) para establecer ventana de búsqueda en Google Calendar.
+
     Prints:
         lista de alumnos con sus clases, el precio de cada una, la suma total del alumno y la suma total de todos los alumnos.
+
     Returns:
         dic_alumnos(intervalo)
     """
