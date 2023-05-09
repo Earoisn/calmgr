@@ -36,6 +36,7 @@ def buscar(mod = False, base = None):
     las posibilidades para elegir.
     
     Args:
+        mod: flag para pasar nombres sin alterarlos, solo haciendo split(",") en el input string.
         base: diccionario con datos de los alumnos - Listado.load().alumnos por defecto.
     
     Returns:
@@ -185,7 +186,7 @@ def freebusy(intervalo:tuple):
     Args:
         intervalo: tupla (fecha de inicio, fecha de finalización) ambas en isoformat.
     Returns:
-        freebusy().query() de Google Calendar API
+        freebusy().query() response de Google Calendar API
         o
         None, si no había eventos.
     """
@@ -233,7 +234,9 @@ def disponible(intervalo, inidefault:tuple=(9,0), findefault:tuple=(21,30)):
             inidefault = (ini_h, ini_min)
             findefault = (fin_h, fin_min)
         except:
-            print("La cagaste, valores establecidos por defecto a las 9:00 y las 21:30.\n")
+            print(
+                "La cagaste, valores establecidos por defecto a las 9:00 y las 21:30.\n"
+            )
     
     events_busy = freebusy(intervalo)["calendars"]["primary"]["busy"]
     ini_h, ini_min = inidefault
@@ -418,6 +421,10 @@ def info_alumnos(intervalo:tuple, base = None):
 
 
 def data_pago():
+    """
+    Prints:
+        data fiscal, fecha de último pago y notas asociadas a uno o más alumnos según figura en la base local.
+    """
     diccionario = Listado.load().alumnos
     alumno = buscar(base = diccionario)
 
@@ -489,7 +496,9 @@ def main():
                 opt = "x"
                 
                 while opt not in "cdpm":
-                    opt = input("[c]onsulta manual, [d]euda, [p]ago, [m]odificar listado.\n")
+                    opt = input(
+                        "[c]onsulta manual, [d]euda, [p]ago, [m]odificar listado.\n"
+                    )
                 
                 match opt:
 
