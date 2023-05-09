@@ -519,7 +519,7 @@ def main():
                                     alumno = buscar()
                                     
                                     if not len(alumno) == 1:
-                                        print("La cagaste. Te dije uno solo.")
+                                        print("La cagaste.")
                                         continue
                                     
                                     Listado.agregar(alumno[0], modif = True)
@@ -570,27 +570,24 @@ def main():
                             alumno = buscar(mod = True)
                             
                             if not len(alumno) == 1:
-                                print("La cagaste. Te dije que pusieras uno solo.\n")
+                                print("La cagaste.\n")
                                 continue
                             
-                            data = input("Espacio para ingresar data fiscal, enter para 'Consumidor Final'.\n")
+                            data_fiscal = input("Espacio para ingresar data fiscal, enter para 'Consumidor Final'.\n")
                             
-                            if data == " ":
-                                nombre = input("Nombre y apellido: \n")
-                                cuit = input("CUIT sin guiones ni espacios: \n")
-                                cond = input("Condición frente al IVA: \n")
-                                data = f"{nombre}, {cond}, CUIT: {cuit}"
+                            if data_fiscal == " ":
+                                data_fiscal = Listado.datagen()
                             else:
-                                data = "Consumidor Final"
+                                data_fiscal = "Consumidor Final"
                             
                             nota = input(
-                                "Espacio para ingresar un nota, enter para continuar"
+                                "Espacio para ingresar un nota, enter para continuar.\n"
                             )
 
                             if nota == " ":
                                 nota = input("Nota: ")
                             
-                            Listado.agregar(alumno[0], data_fiscal = data, nota = nota)
+                            Listado.agregar(alumno[0], data_fiscal = data_fiscal, nota = nota)
                         elif opt == " ":
                             alumno = buscar()
                             

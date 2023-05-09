@@ -42,7 +42,13 @@ class Listado:
             pickle.dump(base, b)
             return
 
-    
+    def datagen():
+        nombre = input("Nombre y apellido: \n")
+        cuit = input("CUIT sin guiones ni espacios: \n")
+        cond = input("Condición frente al IVA: \n")
+        data_fiscal = f"{nombre}, {cond}, CUIT: {cuit}"
+        return data_fiscal
+
     def agregar(
         nombre: str = None, 
         fecha_pago: tuple = (dt.now().year, dt.now().month, dt.now().day, 0, 0), 
@@ -69,19 +75,26 @@ class Listado:
                     f"Data fiscal: {data_fiscal}.\n"\
                     + "Espacio para sobreescribir, enter para conservar.\n"
                 )
+                
                 if agrega_cambia == " ":
-                    
-                    data_fiscal = input("CUIT sin guiones ni espacios: ")
-                                    
-                else:
-                    agrega_cambia = input(
-                        f"Nota: {nota}.\n"\
-                        + "Espacio para sobreescribir, enter para conservar.\n"
-                    )
-                    if agrega_cambia == " ":
-                        nota = input("Nota: ")
+                    data_fiscal = Listado.datagen()
+                
+                agrega_cambia = input(
+                    f"Nota: '{nota}'.\n"\
+                    + "Espacio para sobreescribir, enter para conservar.\n"
+                )
+                
+                if agrega_cambia == " ":
+                    nota = input("Nota: ")
+        else:
+            data_fiscal = Listado.datagen()
+            nota = input("Nota: ")
 
-        listado.alumnos[nombre] = {"fecha_pago": fecha_pago, "data_fiscal": data_fiscal, "nota": nota}
+        listado.alumnos[nombre] = {
+            "fecha_pago": fecha_pago, 
+            "data_fiscal": data_fiscal, 
+            "nota": nota
+        }
         Listado.save(listado)
     
     
@@ -119,11 +132,131 @@ class Listado:
 
 # ejemplo de lista de alumnos cargada en base.alumnos:
 # alumnos = {
-#     'Lucas 2': {'fecha_pago': (2023, 5, 4, 0, 0), 'data_fiscal': 'Consumidor Final', 'nota': ''}, 'Katia': {'fecha_pago': (2023, 4, 30, 0, 0), 'data_fiscal': 'Consumidor Final', 'nota': ''}, 'Mica 7': {'fecha_pago': (2023, 4, 30, 0, 0), 'data_fiscal': 'Consumidor Final', 'nota': ''}, 'Pedro 3': {'fecha_pago': (2023, 5, 4, 0, 0), 'data_fiscal': 'Consumidor Final', 'nota': ''}, 'Pedro 2': {'fecha_pago': (2023, 5, 4, 0, 0), 'data_fiscal': 'Consumidor Final', 'nota': ''}, 'Mía 2': {'fecha_pago': (2023, 5, 16, 0, 0), 'data_fiscal': 'Consumidor Final', 'nota': ''}, 'Felipe 6': {'fecha_pago': (2023, 5, 5, 0, 0), 'data_fiscal': 'Consumidor Final', 'nota': ''}, 'Ame': {'fecha_pago': (2023, 4, 25, 0, 0), 'data_fiscal': 'Consumidor Final', 'nota': ''}, 'Félix': {'fecha_pago': (2023, 4, 26, 0, 0), 'data_fiscal': 'Garfunkel Griselda Lorena, IVA Responsable Inscripto, CUIT 27214776230', 'nota': ''}, 
-#     'Mateo 4': {'fecha_pago': (2023, 4, 30, 0, 0), 'data_fiscal': 'Consumidor Final', 'nota': ''}, 'Nicolás 14': {'fecha_pago': (2023, 5, 2, 0, 0), 'data_fiscal': 'Consumidor Final', 'nota': ''}, 'Benjamín 2': {'fecha_pago': (2023, 5, 5, 0, 0), 'data_fiscal': 'Consumidor Final', 'nota': ''}, 
-#     'Martina 5': {'fecha_pago': (2023, 4, 27, 0, 0), 'data_fiscal': 'Consumidor Final', 'nota': ''}, 'Tomás 10': {'fecha_pago': (2023, 5, 2, 0, 0), 'data_fiscal': 'Curchmar Ivana, Responsable Monotributo, CUIT 27243142003', 'nota': ''}, 
-#     'Maxi': {'fecha_pago': (2023, 5, 31, 0, 0), 'data_fiscal': 'Consumidor Final', 'nota': ''}, 'Olivia': {'fecha_pago': (2023, 5, 1, 0, 0), 'data_fiscal': 'Consumidor Final', 'nota': ''}, 'Lucía 5': {'fecha_pago': (2023, 5, 1, 0, 0), 'data_fiscal': 'Consumidor Final', 'nota': ''}, 'Amalia 2': {'fecha_pago': (2023, 5, 5, 0, 0), 'data_fiscal': 'Andreucci Paula, IVA Responsable Inscripto, CUIT 27228170785', 'nota': ''}, 
-#     'Delfina 3': {'fecha_pago': (2023, 5, 1, 0, 0), 'data_fiscal': 'Consumidor Final', 'nota': ''}, 'Julia 4': {'fecha_pago': (2023, 5, 1, 0, 0), 'data_fiscal': 'Consumidor Final', 'nota': ''}, 'Lucía 6': {'fecha_pago': (2023, 5, 1, 0, 0), 'data_fiscal': 'Consumidor Final', 'nota': ''}, 'Lucas 7': {'fecha_pago': (2023, 5, 3, 0, 0), 'data_fiscal': 'Consumidor Final', 'nota': ''}, 'Clara 2': {'fecha_pago': (2023, 4, 26, 0, 0), 'data_fiscal': 'Consumidor Final', 'nota': ''}, 'Mica 5': {'fecha_pago': (2023, 5, 8, 0, 0), 'data_fiscal': 'Consumidor Final', 'nota': ''}, 'Matilda': {'fecha_pago': (2023, 5, 8, 0, 0), 'data_fiscal': 'Consumidor Final', 'nota': ''}}
+#     'Lucas 2': {
+#         'fecha_pago': (2023, 5, 4, 0, 0), 
+#         'data_fiscal': 'Consumidor Final', 
+#         'nota': ''
+#     }, 
+#     'Katia': {
+#         'fecha_pago': (2023, 4, 30, 0, 0), 
+#         'data_fiscal': 'Consumidor Final', 
+#         'nota': ''
+#     }, 
+#     'Mica 7': {
+#         'fecha_pago': (2023, 4, 30, 0, 0), 
+#         'data_fiscal': 'Consumidor Final', 
+#         'nota': ''
+#     }, 
+#     'Pedro 3': {
+#         'fecha_pago': (2023, 5, 4, 0, 0), 
+#         'data_fiscal': 'Consumidor Final', 
+#         'nota': ''
+#     }, 
+#     'Pedro 2': {
+#         'fecha_pago': (2023, 5, 4, 0, 0), 
+#         'data_fiscal': 'Consumidor Final', 
+#         'nota': ''
+#     }, 
+#     'Mía 2': {
+#         'fecha_pago': (2023, 5, 16, 0, 0), 
+#         'data_fiscal': 'Consumidor Final', 
+#         'nota': ''
+#     }, 
+#     'Felipe 6': {
+#         'fecha_pago': (2023, 5, 5, 0, 0), 
+#         'data_fiscal': 'Consumidor Final', 
+#         'nota': ''
+#     }, 
+#     'Ame': {
+#         'fecha_pago': (2023, 4, 25, 0, 0), 
+#         'data_fiscal': 'Consumidor Final', 
+#         'nota': ''
+#     }, 
+#     'Félix': {
+#         'fecha_pago': (2023, 4, 26, 0, 0), 
+#         'data_fiscal': 'Garfunkel Griselda Lorena, '\
+#                         + 'IVA Responsable Inscripto, '\
+#                         + 'CUIT 27214776230.', 
+#         'nota': "Colocar 'honorarios' en el concepto de la factura."
+#     }, 
+#     'Mateo 4': {
+#         'fecha_pago': (2023, 4, 30, 0, 0), 
+#         'data_fiscal': 'Consumidor Final', 
+#         'nota': ''
+#     }, 
+#     'Nicolás 14': {
+#         'fecha_pago': (2023, 5, 2, 0, 0), 
+#         'data_fiscal': 'Consumidor Final', 
+#         'nota': ''
+#     }, 
+#     'Benjamín 2': {
+#         'fecha_pago': (2023, 5, 5, 0, 0), 
+#         'data_fiscal': 'Consumidor Final', 
+#         'nota': ''
+#     }, 
+#     'Martina 5': {
+#         'fecha_pago': (2023, 4, 27, 0, 0), 
+#         'data_fiscal': 'Consumidor Final', 
+#         'nota': ''
+#     }, 
+#     'Tomás 10': {
+#         'fecha_pago': (2023, 5, 2, 0, 0), 
+#         'data_fiscal': 'Curchmar Ivana, Responsable Monotributo, CUIT 27243142003', 'nota': ''
+#     }, 
+#     'Maxi': {
+#         'fecha_pago': (2023, 5, 31, 0, 0), 
+#         'data_fiscal': 'Consumidor Final', 
+#         'nota': ''
+#     }, 
+#     'Olivia': {
+#         'fecha_pago': (2023, 5, 1, 0, 0), 
+#         'data_fiscal': 'Consumidor Final', 
+#         'nota': ''
+#     }, 
+#     'Lucía 5': {'fecha_pago': (2023, 5, 1, 0, 0), 
+#         'data_fiscal': 'Consumidor Final', 
+#         'nota': ''
+#     }, 
+#     'Amalia 2': {'fecha_pago': (2023, 5, 5, 0, 0), 
+#         'data_fiscal': 'Andreucci Paula, IVA Responsable Inscripto, CUIT 27228170785', 'nota': ''
+#     }, 
+#     'Delfina 3': {
+#         'fecha_pago': (2023, 5, 1, 0, 0), 
+#         'data_fiscal': 'Consumidor Final', 
+#         'nota': ''
+#     }, 
+#     'Julia 4': {
+#         'fecha_pago': (2023, 5, 1, 0, 0), 
+#         'data_fiscal': 'Consumidor Final', 
+#         'nota': ''
+#     }, 
+#     'Lucía 6': {
+#         'fecha_pago': (2023, 5, 1, 0, 0), 
+#         'data_fiscal': 'Consumidor Final', 
+#         'nota': ''
+#     }, 
+#     'Lucas 7': {
+#         'fecha_pago': (2023, 5, 3, 0, 0), 
+#         'data_fiscal': 'Consumidor Final', 
+#         'nota': ''
+#     }, 
+#     'Clara 2': {
+#         'fecha_pago': (2023, 4, 26, 0, 0), 
+#         'data_fiscal': 'Consumidor Final', 
+#         'nota': ''
+#     }, 
+#     'Mica 5': {
+#         'fecha_pago': (2023, 5, 8, 0, 0), 
+#         'data_fiscal': 'Consumidor Final', 
+#         'nota': ''
+#     }, 
+#     'Matilda': {
+#         'fecha_pago': (2023, 5, 8, 0, 0), 
+#         'data_fiscal': 'Consumidor Final', 
+#         'nota': ''
+#     }
+# }
+
 
 
 # lista = Listado(alumnos)
