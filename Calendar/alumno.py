@@ -242,6 +242,7 @@ class Listado:
             )
 
 
+# ejemplo de lista de alumnos cargada en base.alumnos:
 # alumnos = {
 #     'Lucas 2': {
 #         'fecha_pago': (2023, 5, 4, 0, 0), 
@@ -373,7 +374,5 @@ class Listado:
 # print(lista.alumnos)
 # Listado.sync()
 
-
-# ejemplo de lista de alumnos cargada en base.alumnos:
 
 
