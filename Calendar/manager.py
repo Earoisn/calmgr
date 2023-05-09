@@ -59,7 +59,9 @@ def buscar(mod = False, base = None):
         + "introducir un solo nombre.\n"
     )
     nombres = [nombre.strip().capitalize() for nombre in buscar.split(",")]
-    encontrados = [nombre for nombre in base.keys() for b in nombres if nombre.startswith(b)]
+    encontrados = [
+        nombre for nombre in base.keys() for b in nombres if nombre.startswith(b)
+    ]
     exactos = [nombre for nombre in base.keys() for b in nombres if nombre == b]
     
     if mod: return nombres
@@ -421,18 +423,16 @@ def data_pago():
 
     if alumno:
         diccionario = {nombre: diccionario.get(nombre) for nombre in alumno}
-    else:
-        opt = input(
-            "Espacio para mostrar los datos de todos los alumnos, "\
-            + "enter para continuar.\n"
-        )
-
-        if opt == "": return
 
     for alumno, datos in diccionario.items():
-        print(f"{alumno}\nData fiscal: {datos.get('data_fiscal')}\nFecha de pago: {t2d(datos.get('fecha_pago')).strftime('%d/%m/%Y')}")
+        print("--------------------------------------------\n"\
+            + f"{alumno}\n"\
+            + f"Data fiscal: {datos.get('data_fiscal')}\n"\
+            + f"Fecha de pago: {t2d(datos.get('fecha_pago')).strftime('%d/%m/%Y')}\n"\
+            + f"Nota: {datos.get('nota')}\n"
+            + "--------------------------------------------\n"
+        )
     
-
 
 def calc_ingresos(intervalo:tuple):
     """
@@ -502,6 +502,20 @@ def main():
                         match consulta:
                             
                             case "d":
+                                consulta_modifica = input(
+                                    "Espacio para modificar, enter para consultar.\n"
+                                )
+
+                                if consulta_modifica == " ":
+                                    alumno = buscar()
+                                    
+                                    if not len(alumno) == 1:
+                                        print("La cagaste. Te dije uno solo.")
+                                        continue
+                                    
+                                    Listado.agregar(alumno[0], modif = True)
+                                    continue
+                                 
                                 data_pago()
                                 continue
                             
@@ -560,17 +574,23 @@ def main():
                             else:
                                 data = "Consumidor Final"
                             
-                            Listado.agregar_alumno(alumno[0], data_fiscal = data)
+                            nota = input(
+                                "Espacio para ingresar un nota, enter para continuar"
+                            )
+
+                            if nota == " ":
+                                nota = input("Nota: ")
+                            
+                            Listado.agregar(alumno[0], data_fiscal = data, nota = nota)
                         elif opt == " ":
                             alumno = buscar()
                             
-                            if not alumno:
-                                continue
+                            if not alumno: continue
                             
                             ok = input(f"Seguro que deseás eliminar a {alumno[0]}? Escribí 'sí' para confirmar.\n")
                             
                             if ok == "sí":
-                                Listado.eliminar_alumno(alumno[0])
+                                Listado.eliminar(alumno[0])
                         else:
                             print("Reiniciando.")
                                                     
