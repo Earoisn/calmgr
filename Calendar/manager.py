@@ -1,12 +1,10 @@
 from event import Event
 from datetime import datetime as dt, timedelta as delta, timezone as tz
-import json
 import sys
 from copy import deepcopy
 sys.path.extend(["D:\\code\\gcloud","D:\\code\\gcloud\\Calendar"])
 from Google import glogin, get_service
 from alumno import Listado
-
 
 def n2a(datetime:dt):
     "abrev. de 'naive to aware' - toma un datetime y lo hace offset aware para Arg"
@@ -28,76 +26,12 @@ def d2t(datetime:dt):
     return (datetime.year, datetime.month, datetime.day, datetime.hour, datetime.minute)
 
 
-def buscar(mod = False, base = None):
-    """
-    Pide al usuario lista de alumnos separados por coma, pero acepta a partir de una
-    letra para buscar en la base de datos si existen coincidencias.
-    En caso de tipear los nombres completos, devuelve la lista, de lo contrario, ofrece
-    las posibilidades para elegir.
-    
-    Args:
-        mod: flag para pasar nombres sin alterarlos, solo haciendo split(",") en el input string.
-        base: diccionario con datos de los alumnos - Listado.load().alumnos por defecto.
-    
-    Returns:
-        lista con los nombres completos de los alumnos | 
-        lista vacía cuando:
-
-        1) no hay coincidencias
-
-        2) en la selección de coincidencias:
-            a) se comete un error al poner números separados por coma
-
-            b) se deja vacía la selección.
-    """
-    
-    if not base:
-        base = Listado.load().alumnos
-    
-    buscar = input(
-        "Nombres separados por coma, puede buscar a partir de una sola letra.\n"\
-        + "Si es para asentar un pago o para modificar la base de datos, "\
-        + "introducir un solo nombre.\n"
-    )
-    nombres = [nombre.strip().capitalize() for nombre in buscar.split(",")]
-    encontrados = [
-        nombre for nombre in base.keys() for b in nombres if nombre.startswith(b)
-    ]
-    exactos = [nombre for nombre in base.keys() for b in nombres if nombre == b]
-    
-    if mod: return nombres
-
-    if len(encontrados) == 0:
-        print("No se encontró información para está búsqueda en la base de datos.")
-        return []
-    elif len(encontrados) == len(exactos):
-        return encontrados
-    else:
-        print("Posibles coincidencias:")
-        
-        for i, alumno in enumerate(encontrados):
-            print(f"{i+1}. {alumno}")
-
-        selec = input("Números separados por coma.\n")
-        
-        if selec == "": return []
-        
-        try:
-            selec = [int(n.strip()) for n in selec.split(",")]
-        except:
-            print("La cagaste.")
-            return []
-        
-        alumnos = [encontrados[n-1] for n in selec]
-
-    return alumnos
-
-
-def tinter(deuda = None):
+def tinter(tmin = None, tmax = None):
     """
     Pide al usuario día, mes y año o toma fecha actual y cantidad de días por delante.
     Args:
-        deuda (opcional): tupla (yyyy,m,d,H,M) - último pago del alumno. En caso de recibir este argumento, funciona como tmin en el return.
+        tmin (opcional): tupla (yyyy,m,d,H,M) - En caso de recibir este argumento, funciona como tmin en el return. 
+        Puede ser utilizado para calcular la deuda de un alumno introduciendo el útlimo pago registrado.
     Returns:
         tupla (tmin, tmax) de fechas en formato iso para usar la API de Google Calendar
     """
@@ -114,8 +48,8 @@ def tinter(deuda = None):
     
     ahora = n2a(dt.now())
     
-    if deuda:
-        desde = t2d(deuda)
+    if tmin:
+        desde = t2d(tmin)
     else:
         desde = input(
             "Dejar un espacio para cambiar fecha inicial, enter para fecha actual.\n"
@@ -134,12 +68,15 @@ def tinter(deuda = None):
         else:
             desde = ahora    
 
-    if not desde == ahora:
-        hasta = input(
-            "Dejar un espacio para cambiar fecha final, enter para fecha actual.\n"
-        )
-    else:
-        hasta = " "
+    if tmax:
+        hasta = t2d(tmax)
+    else:    
+        if not desde == ahora:
+            hasta = input(
+                "Dejar un espacio para cambiar fecha final, enter para fecha actual.\n"
+            )
+        else:
+            hasta = " "
     
     if hasta == " ":
         fecha = input(
@@ -166,14 +103,15 @@ def tinter(deuda = None):
                 )
                 hasta = 10
             hasta = desde + delta(hasta)
-    else:
+    elif not tmax:
         hasta = ahora
-        if (hasta - desde).total_seconds() <= 0:
-            print(
-                "La cagaste. Las fechas de inicio y finalización son iguales "\
-                + "o la ventana temporal es negativa."
-            )
-            return None
+    
+    if (hasta - desde).total_seconds() <= 0:
+        print(
+            "La cagaste. Las fechas de inicio y finalización son iguales "\
+            + "o la ventana temporal es negativa."
+        )
+        return None
     
     tmax = hasta.isoformat()
     tmin = desde.isoformat()
@@ -375,11 +313,11 @@ def info_alumnos(intervalo:tuple, base = None):
     Returns:
         dic_alumnos(intervalo)
     """
-    
+    from alumno import Listado
     plata = list()
     total = []
     alumnos = dic_alumnos(intervalo)
-    lista_alumnos = buscar()
+    lista_alumnos = Listado.buscar()
     
     if not lista_alumnos:
         lista_alumnos = alumnos.keys()
@@ -420,27 +358,6 @@ def info_alumnos(intervalo:tuple, base = None):
     return alumnos
 
 
-def data_pago():
-    """
-    Prints:
-        data fiscal, fecha de último pago y notas asociadas a uno o más alumnos según figura en la base local.
-    """
-    diccionario = Listado.load().alumnos
-    alumno = buscar(base = diccionario)
-
-    if alumno:
-        diccionario = {nombre: diccionario.get(nombre) for nombre in alumno}
-
-    for alumno, datos in diccionario.items():
-        print("--------------------------------------------\n"\
-            + f"{alumno}\n"\
-            + f"Data fiscal: {datos.get('data_fiscal')}\n"\
-            + f"Fecha de pago: {t2d(datos.get('fecha_pago')).strftime('%d/%m/%Y')}\n"\
-            + f"Nota: {datos.get('nota')}\n"
-            + "--------------------------------------------\n"
-        )
-    
-
 def calc_ingresos(intervalo:tuple):
     """
     Args:
@@ -471,6 +388,8 @@ def calc_ingresos(intervalo:tuple):
 
 
 def main():
+    print("Actualizando base de datos")
+    Listado.sync()
     while True: 
         ejecutar = "x"    
         
@@ -511,21 +430,20 @@ def main():
                         match consulta:
                             
                             case "d":
+                                alumnos = Listado.buscar()
                                 consulta_modifica = input(
                                     "Espacio para modificar, enter para consultar.\n"
                                 )
 
                                 if consulta_modifica == " ":
-                                    alumno = buscar()
-                                    
-                                    if not len(alumno) == 1:
+                                    if not len(alumnos) == 1:
                                         print("La cagaste.")
                                         continue
                                     
-                                    Listado.agregar(alumno[0], modif = True)
+                                    Listado.agregar(alumnos[0], mod = True)
                                     continue
                                  
-                                data_pago()
+                                Listado.data_pago(alumnos)
                                 continue
                             
                             case "c":
@@ -541,7 +459,7 @@ def main():
                         intervalo = tinter(d2t(tmin))
                                         
                     case "p":
-                        alumno = buscar()
+                        alumno = Listado.buscar()
                         
                         if len(alumno) == 0: continue
 
@@ -567,7 +485,7 @@ def main():
                         opt = input("Espacio para eliminar, enter para agregar.\n")
                         
                         if opt == "":
-                            alumno = buscar(mod = True)
+                            alumno = Listado.buscar(mod = True)
                             
                             if not len(alumno) == 1:
                                 print("La cagaste.\n")
@@ -589,7 +507,7 @@ def main():
                             
                             Listado.agregar(alumno[0], data_fiscal = data_fiscal, nota = nota)
                         elif opt == " ":
-                            alumno = buscar()
+                            alumno = Listado.buscar()
                             
                             if not alumno: continue
                             
