@@ -431,6 +431,7 @@ def main():
                             
                             case "d":
                                 alumnos = Listado.buscar()
+                                if len(alumnos) == 0: continue
                                 consulta_modifica = input(
                                     "Espacio para modificar, enter para consultar.\n"
                                 )

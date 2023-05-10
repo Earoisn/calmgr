@@ -96,11 +96,15 @@ class Listado:
             + "Si es para asentar un pago o para modificar la base de datos, "\
             + "introducir un solo nombre.\n"
         )
-        nombres = [nombre.strip().capitalize() for nombre in buscar.split(",")]
+        nombres = [nombre.strip().lower() for nombre in buscar.split(",")]
         encontrados = [
-            nombre for nombre in base.keys() for b in nombres if nombre.startswith(b)
+            nombre for nombre in base.keys() 
+            for b in nombres if nombre.lower().startswith(b)
         ]
-        exactos = [nombre for nombre in base.keys() for b in nombres if nombre == b]
+        exactos = [
+            nombre for nombre in base.keys() 
+            for b in nombres if nombre.lower() == b.lower()
+        ]
         
         if mod: return nombres
 
@@ -210,11 +214,11 @@ class Listado:
             return None
         
         if not fecha:
-            m,d = dt.now().month, dt.now().day
+            m, d = dt.now().month, dt.now().day
         else:
-            m,d = fecha
+            m, d = fecha
         
-        listado.alumnos[nombre]["fecha_pago"] = (y,m,d,0,0)
+        listado.alumnos[nombre]["fecha_pago"] = (y,m,d,23,59)
         Listado.save(listado)
         print("Guardado.")
         return None
@@ -226,7 +230,7 @@ class Listado:
             data fiscal, fecha de último pago y notas asociadas a uno o más alumnos según figura en la base local.
         """
         diccionario = Listado.load().alumnos
-        if not alumnos:
+        if not alumnos and not isinstance(alumnos,list):
             alumnos = Listado.buscar()
 
         if alumnos:
