@@ -87,11 +87,11 @@ def tinter(tmin = None, tmax = None):
             fecha = input("hasta día, mes[, año]:\n")
             día, mes, año = check_fecha(fecha)
             hasta = ahora.replace(
-                year=año, 
-                month=mes, 
-                day=día, 
-                hour= 0, 
-                minute= 0
+                year = año, 
+                month = mes, 
+                day = día, 
+                hour = 0, 
+                minute = 0
             )
         else:
             hasta = input("días\n")
