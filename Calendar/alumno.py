@@ -183,9 +183,13 @@ class Listado:
                 if agrega_cambia == " ":
                     nota = input("Nota: ")
         elif not sync:
-                print(nombre)
-                data_fiscal = Listado.datagen()
-                nota = input("Nota: ")
+                ingreso_manual = input(
+                    "Espacio para ingresar data manualmente, enter para parámetros predeterminados.\n"
+                )
+                if ingreso_manual == " ":
+                    print("Data fiscal:")
+                    data_fiscal = Listado.datagen()
+                    nota = input("Nota: ")
 
         listado.alumnos[nombre] = {
             "fecha_pago": fecha_pago, 

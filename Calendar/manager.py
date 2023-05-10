@@ -431,19 +431,27 @@ def main():
                             
                             case "d":
                                 alumnos = Listado.buscar()
-                                if len(alumnos) == 0: continue
-                                consulta_modifica = input(
+                                
+                                if len(alumnos) == 0: 
+                                    todos = input("Espacio para mostrar todos, enter para continuar.\n")
+                                    
+                                    if todos == " ":
+                                        alumnos = Listado.load().alumnos
+                                    else: continue
+
+                                elif len(alumnos) == 1:
+                                    consulta_modifica = input(
                                     "Espacio para modificar, enter para consultar.\n"
                                 )
 
-                                if consulta_modifica == " ":
-                                    if not len(alumnos) == 1:
-                                        print("La cagaste.")
+                                    if consulta_modifica == " ":
+                                        if not len(alumnos) == 1:
+                                            print("La cagaste.")
+                                            continue
+                                        
+                                        Listado.agregar(alumnos[0], mod = True)
                                         continue
                                     
-                                    Listado.agregar(alumnos[0], mod = True)
-                                    continue
-                                 
                                 Listado.data_pago(alumnos)
                                 continue
                             
@@ -491,22 +499,8 @@ def main():
                             if not len(alumno) == 1:
                                 print("La cagaste.\n")
                                 continue
-                            
-                            data_fiscal = input("Espacio para ingresar data fiscal, enter para 'Consumidor Final'.\n")
-                            
-                            if data_fiscal == " ":
-                                data_fiscal = Listado.datagen()
-                            else:
-                                data_fiscal = "Consumidor Final"
-                            
-                            nota = input(
-                                "Espacio para ingresar un nota, enter para continuar.\n"
-                            )
 
-                            if nota == " ":
-                                nota = input("Nota: ")
-                            
-                            Listado.agregar(alumno[0], data_fiscal = data_fiscal, nota = nota)
+                            Listado.agregar(alumno[0])                        
                         elif opt == " ":
                             alumno = Listado.buscar()
                             
