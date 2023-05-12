@@ -90,8 +90,8 @@ def tinter(tmin = None, tmax = None):
                 year = año, 
                 month = mes, 
                 day = día, 
-                hour = 0, 
-                minute = 0
+                hour = 23, 
+                minute = 59
             )
         else:
             hasta = input("días\n")
@@ -102,9 +102,9 @@ def tinter(tmin = None, tmax = None):
                     "La cagaste, ventana de tiempo establecida por defecto a 10 días.\n"
                 )
                 hasta = 10
-            hasta = desde + delta(hasta)
+            hasta = (desde + delta(hasta)).replace(hour = 23, minute = 59)
     elif not tmax:
-        hasta = ahora
+        hasta = ahora.replace(hour = 23, minute = 59)
     
     if (hasta - desde).total_seconds() <= 0:
         print(
@@ -209,6 +209,9 @@ def disponible(intervalo, inidefault:tuple=(9,0), findefault:tuple=(21,30)):
         anterior = fin
         findefault = t2d((ini.year, ini.month, ini.day, fin_h, fin_min))
         prevkey = key
+    
+    if anterior != None and (findefault - anterior).total_seconds() / 60 > 60:
+        horarios_disponibles[prevkey].append((anterior, findefault))
     
     texto = "Horarios disponibles (de hora de inicio mínima "\
             + "a hora de finalización máxima):\n"    
