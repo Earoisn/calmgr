@@ -217,25 +217,25 @@ def disponible(intervalo, inidefault:tuple=(9,0), findefault:tuple=(21,30)):
             + "a hora de finalización máxima):\n"    
     
     for k,v in horarios_disponibles.items():
-        if not ("sábado" or "domingo") in k:
-            texto += f"  •{k}:\n    "
+        if any(día in k for día in ["sábado", "domingo"]): continue
+        texto += f"  •{k}:\n    "
+        
+        for ini, fin in v:
+            if (ini.hour, ini.minute) == (inidefault.hour, inidefault.minute):
+                ini_h, ini_min = ini.hour, ini.minute 
+            elif ini.minute != 55:
+                ini_h, ini_min = ini.hour, (ini.minute + 5) 
+            else:
+                ini_h, ini_min = (ini.hour + 1), 0
             
-            for ini, fin in v:
-                if (ini.hour, ini.minute) == (inidefault.hour, inidefault.minute):
-                    ini_h, ini_min = ini.hour, ini.minute 
-                elif ini.minute != 55:
-                    ini_h, ini_min = ini.hour, (ini.minute + 5) 
-                else:
-                    ini_h, ini_min = (ini.hour + 1), 0
-                
-                if (fin.hour, fin.minute) == (findefault.hour, findefault.minute):
-                    fin_h, fin_min = fin.hour, fin.minute 
-                elif fin.minute != 0:
-                    fin_h, fin_min = fin.hour, (fin.minute - 5) 
-                else:
-                    fin_h, fin_min = (fin.hour - 1), 55
-                
-                texto += f"de {ini_h:02}:{ini_min:02} a {fin_h:02}:{fin_min:02}, "
+            if (fin.hour, fin.minute) == (findefault.hour, findefault.minute):
+                fin_h, fin_min = fin.hour, fin.minute 
+            elif fin.minute != 0:
+                fin_h, fin_min = fin.hour, (fin.minute - 5) 
+            else:
+                fin_h, fin_min = (fin.hour - 1), 55
+            
+            texto += f"de {ini_h:02}:{ini_min:02} a {fin_h:02}:{fin_min:02}, "
         
         texto += "\n"
     
