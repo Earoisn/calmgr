@@ -71,7 +71,7 @@ def tinter(tmin = None, tmax = None):
     if tmax:
         hasta = t2d(tmax)
     else:    
-        if not desde == ahora:
+        if not (desde == ahora or ((ahora-desde).total_seconds() < 60)):
             hasta = input(
                 "Dejar un espacio para cambiar fecha final, enter para fecha actual.\n"
             )
