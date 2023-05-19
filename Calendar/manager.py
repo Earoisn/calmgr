@@ -491,6 +491,7 @@ def main():
                                 continue
                         
                         Listado.pago(alumno[0])
+                        Listado.data_pago(alumno)
                         continue
                     
                     case "m":

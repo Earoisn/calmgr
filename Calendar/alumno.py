@@ -47,7 +47,7 @@ class Listado:
         from manager import tinter, n2a, d2t, dic_alumnos
         Listado.backup()
         listado = Listado.load()
-        ahora = n2a(dt.now())
+        ahora = n2a(dt.now().replace(hour = 23, minute = 59))
         dif = delta(days = 30)
         tmin = d2t(ahora - dif)
         tmax = d2t(ahora)
@@ -106,7 +106,7 @@ class Listado:
             for b in nombres if nombre.lower() == b.lower()
         ]
         
-        if mod: return nombres
+        if mod: return [nombre.capitalize() for nombre in nombres]
 
         if len(encontrados) == 0:
             print("No se encontró información para está búsqueda en la base de datos.")
@@ -234,7 +234,7 @@ class Listado:
             data fiscal, fecha de último pago y notas asociadas a uno o más alumnos según figura en la base local.
         """
         diccionario = Listado.load().alumnos
-        if not alumnos and not isinstance(alumnos,list):
+        if not alumnos and not isinstance(alumnos,list): # para distinguir entre una búsqueda que no arrojó resultados y la búsqeda vacía que pretende obtener todos los resultados.
             alumnos = Listado.buscar()
 
         if alumnos:
