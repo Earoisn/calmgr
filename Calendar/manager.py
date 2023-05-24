@@ -2,7 +2,7 @@ from datetime import datetime as dt, timedelta as delta, timezone as tz
 from copy import deepcopy
 import sys
 sys.path.extend(["D:\\code\\gcloud", "D:\\code\\gcloud\\Calendar"])
-from google import glogin, get_service
+from google_ import glogin, get_service
 from event import Event
 from alumno import Listado
 
