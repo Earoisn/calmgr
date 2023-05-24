@@ -2,7 +2,7 @@ from datetime import datetime as dt
 
 
 class Event:
-    def __init__(self, stream, precio = 60):
+    def __init__(self, stream, precio=60):
         días = {0: "lunes", 1: "martes", 2: "miércoles", 3: "jueves", 4: "viernes", 5: "sábado", 6: "domingo"}
         self.inicio = dt.fromisoformat(stream["start"]["dateTime"])
         self.fin = dt.fromisoformat(stream["end"]["dateTime"])

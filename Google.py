@@ -27,7 +27,7 @@ def glogin(*scopes):
             print("No había credenciales o no pudo refrescarse el token")
             flow = InstalledAppFlow.from_client_secrets_file(
                 'D:\\code\\gcloud\\credentials.json', SCOPES)
-            creds = flow.run_local_server(port = 0)
+            creds = flow.run_local_server(port=0)
 
         with open('D:\\code\\gcloud\\token.json', 'w') as token:
             token.write(creds.to_json())
@@ -39,7 +39,7 @@ def get_service(creds, api):
     v = {"calendar":"v3","drive":"v1"}
     
     try:
-        service = build(f'{api}', f'{v[api]}', credentials = creds)
+        service = build(f'{api}', f'{v[api]}', credentials=creds)
     except HttpError as error:
         return f'error: {error}'
     

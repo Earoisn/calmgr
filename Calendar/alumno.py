@@ -18,7 +18,7 @@ class Listado:
         pago(alumno[, (yyyy,m,d)]) asigna la fecha actual o la tupla opcional como último pago.
     """
 
-    def __init__(self,base = dict()):
+    def __init__(self, base=dict()):
         self.alumnos = base
     
     def backup():
@@ -27,7 +27,7 @@ class Listado:
         with open("D:\\code\\gcloud\\Calendar\\base_backup.pickle", "wb") as b:
             pickle.dump(listado, b)
     
-    def load(base = None):
+    def load(base=None):
         if not base:
             base = "base"
         
@@ -47,8 +47,8 @@ class Listado:
         from manager import tinter, n2a, d2t, dic_alumnos
         Listado.backup()
         listado = Listado.load()
-        ahora = n2a(dt.now().replace(hour = 23, minute = 59))
-        dif = delta(days = 30)
+        ahora = n2a(dt.now().replace(hour=23, minute=59))
+        dif = delta(days=30)
         tmin = d2t(ahora - dif)
         tmax = d2t(ahora)
         intervalo = tinter(tmin, tmax)
@@ -60,12 +60,12 @@ class Listado:
             return None
         else:
             for alumno in nuevos:
-                Listado.agregar(nombre = alumno, sync = True)
+                Listado.agregar(nombre=alumno, sync=True)
                 print(f"Se agregó a {alumno} a la base")
             print(f"Se completó la actualización de la base de datos.")
             return None
 
-    def buscar(mod = False, base = None):
+    def buscar(mod=False, base=None):
         """
         Pide al usuario lista de alumnos separados por coma, pero acepta a partir de una
         letra para buscar en la base de datos si existen coincidencias.
@@ -153,7 +153,7 @@ class Listado:
             return None
         
         if not fecha_pago:
-            fecha_remota = dt.now()-delta(days = 90)
+            fecha_remota = dt.now() - delta(days=90)
             fecha_pago = (fecha_remota.year, fecha_remota.month, fecha_remota.day, 0, 0)
         
         listado = Listado.load()
@@ -209,7 +209,7 @@ class Listado:
         print(f"Se eliminó a {nombre} de la base.")
         Listado.save(listado)
     
-    def pago(nombre,fecha = None):
+    def pago(nombre, fecha=None):
         listado = Listado.load()
         y = dt.now().year
         
@@ -227,7 +227,7 @@ class Listado:
         print("Guardado.")
         return None
 
-    def data_pago(alumnos = None):
+    def data_pago(alumnos=None):
         from manager import t2d
         """
         Prints:

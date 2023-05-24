@@ -3,20 +3,20 @@ from datetime import datetime as dt, timedelta as delta, timezone as tz
 import sys
 from copy import deepcopy
 sys.path.extend(["D:\\code\\gcloud","D:\\code\\gcloud\\Calendar"])
-from Google import glogin, get_service
+from google import glogin, get_service
 from alumno import Listado
 
-def n2a(datetime:dt):
+def n2a(datetime: dt):
     "abrev. de 'naive to aware' - toma un datetime y lo hace offset aware para Arg"
     return datetime.replace(tzinfo=tz(delta(hours=-3)))
 
 
-def s2d(datetime:str):
+def s2d(datetime: str):
     "abrev. de 'string_to_date' - wrapper para datetime.datetime.fromisoformat()"
     return dt.fromisoformat(datetime)
 
 
-def t2d(datetime:tuple):
+def t2d(datetime: tuple):
     "abrev. de 'tuple_to_date' - (año, mes, día, hora, minuto) -> offset aware datetime para Arg"
     return n2a(dt(datetime[0], datetime[1], datetime[2], datetime[3], datetime[4]))
 
@@ -26,7 +26,7 @@ def d2t(datetime:dt):
     return (datetime.year, datetime.month, datetime.day, datetime.hour, datetime.minute)
 
 
-def tinter(tmin = None, tmax = None):
+def tinter(tmin=None, tmax=None):
     """
     Pide al usuario día, mes y año o toma fecha actual y cantidad de días por delante.
     Args:
@@ -59,11 +59,11 @@ def tinter(tmin = None, tmax = None):
             fecha = input("desde día, mes[, año]:\n")
             día, mes, año = check_fecha(fecha)
             desde = ahora.replace(
-                year = año, 
-                month = mes, 
-                day = día, 
-                hour = 0, 
-                minute = 0
+                year=año, 
+                month=mes, 
+                day=día, 
+                hour=0, 
+                minute=0
             )     
         else:
             desde = ahora    
@@ -87,11 +87,11 @@ def tinter(tmin = None, tmax = None):
             fecha = input("hasta día, mes[, año]:\n")
             día, mes, año = check_fecha(fecha)
             hasta = ahora.replace(
-                year = año, 
-                month = mes, 
-                day = día, 
-                hour = 23, 
-                minute = 59
+                year=año, 
+                month=mes, 
+                day=día, 
+                hour=23, 
+                minute=59
             )
         else:
             hasta = input("días\n")
@@ -102,9 +102,9 @@ def tinter(tmin = None, tmax = None):
                     "La cagaste, ventana de tiempo establecida por defecto a 10 días.\n"
                 )
                 hasta = 10
-            hasta = (desde + delta(hasta)).replace(hour = 23, minute = 59)
+            hasta = (desde + delta(hasta)).replace(hour=23, minute=59)
     elif not tmax:
-        hasta = ahora.replace(hour = 23, minute = 59)
+        hasta = ahora.replace(hour=23, minute=59)
     
     if (hasta - desde).total_seconds() <= 0:
         print(
@@ -119,7 +119,7 @@ def tinter(tmin = None, tmax = None):
     return (tmin, tmax)
 
 
-def freebusy(intervalo:tuple):
+def freebusy(intervalo: tuple):
     """
     Args:
         intervalo: tupla (fecha de inicio, fecha de finalización) ambas en isoformat.
@@ -149,7 +149,7 @@ def freebusy(intervalo:tuple):
         return events_busy
 
 
-def disponible(intervalo, inidefault:tuple=(9,0), findefault:tuple=(21,30)):
+def disponible(intervalo, inidefault: tuple = (9, 0), findefault: tuple = (21, 30)):
     """
     Args:
         events_busy: freebusy().query() de la API de Google Calendar,
@@ -248,7 +248,7 @@ def disponible(intervalo, inidefault:tuple=(9,0), findefault:tuple=(21,30)):
     return horarios_disponibles
 
 
-def dic_alumnos(intervalo:tuple, precio = 60):
+def dic_alumnos(intervalo: tuple, precio=60):
     """ 
     Args:
         intervalo: tupla (tmin, tmax) para establecer ventana de búsqueda en Google Calendar.
@@ -268,12 +268,12 @@ def dic_alumnos(intervalo:tuple, precio = 60):
         creds = glogin(api)
         calendar = get_service(creds, api)
         events = calendar.events().list(
-            calendarId ='primary',
-            timeMin = tmin,
-            timeMax = tmax,
-            singleEvents = True,
-            orderBy = 'startTime',
-            pageToken = page_token
+            calendarId='primary',
+            timeMin=tmin,
+            timeMax=tmax,
+            singleEvents=True,
+            orderBy='startTime',
+            pageToken=page_token
         ).execute()
 
         if not events:
@@ -303,7 +303,7 @@ def dic_alumnos(intervalo:tuple, precio = 60):
     return alumnos
 
 
-def info_alumnos(intervalo:tuple, base = None):
+def info_alumnos(intervalo: tuple, base=None):
     """
     Pide al usuario lista de alumnos o enter para mostrar todos.
     
@@ -361,7 +361,7 @@ def info_alumnos(intervalo:tuple, base = None):
     return alumnos
 
 
-def calc_ingresos(intervalo:tuple):
+def calc_ingresos(intervalo: tuple):
     """
     Args:
         intervalo: tupla (tmin, tmax) para establecer ventana de búsqueda en Google Calendar.
@@ -452,7 +452,7 @@ def main():
                                             print("La cagaste.")
                                             continue
                                         
-                                        Listado.agregar(alumnos[0], mod = True)
+                                        Listado.agregar(alumnos[0], mod=True)
                                         continue
                                     
                                 Listado.data_pago(alumnos)
