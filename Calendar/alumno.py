@@ -7,15 +7,25 @@ class Listado:
     Clase utilizada para modificar la base de datos de alumnos. Puede agregar o borrar a un alumno, modificar la última fecha de pago, la data fiscal y agregar notas.
     Methods:
 
+        backup(): crea un backup de la base en el directorio predeterminado
+
         load(): carga del directorio predeterminado y devuelve la base de datos como un objeto de esta clase
 
         save(base): guarda el objeto que se pasa como argumento en el directorio por defecto, sobreescribiendo el anterior. Crea un backup que también se sobreescribirá con la próxima modificación.
 
-        agregar(nombre, fecha de último pago (yyyy,m,d,H,M), data_fiscal en str, nota en str)
+        sync(): compara alumnos del calendario con los asentados en la base local. Si encuentra diferencias, hace un backup y actualiza.
 
-        eliminar(nombre)
+        buscar(): búsqueda inteligente a partir del input del usuario.
 
-        pago(alumno[, (yyyy,m,d)]) asigna la fecha actual o la tupla opcional como último pago.
+        datagen(): produce string con data fiscal a partir del input del usuario.
+
+        agregar(nombre, fecha de último pago (yyyy,m,d,H,M), data_fiscal, nota): agrega alumno a la base local.
+
+        eliminar(nombre): elimina alumno de la base local.
+        
+        pago(alumno[, (yyyy,m,d)]): asigna la fecha actual o la tupla opcional como último pago de ese alumno en la base local.
+
+        data_pago(alumnos): imprime todos los datos de los alumnos del argumento.
     """
 
     def __init__(self, base=dict()):
@@ -141,9 +151,9 @@ class Listado:
         return data_fiscal
 
     def agregar(
-        nombre: str = None, 
-        fecha_pago: tuple = (), 
-        data_fiscal: str = "Sin información", 
+        nombre: str = None,
+        fecha_pago: tuple = (),
+        data_fiscal: str = "Sin información",
         nota: str = "",
         mod: bool = False,
         sync: bool = False
@@ -192,8 +202,8 @@ class Listado:
                     nota = input("Nota: ")
 
         listado.alumnos[nombre] = {
-            "fecha_pago": fecha_pago, 
-            "data_fiscal": data_fiscal, 
+            "fecha_pago": fecha_pago,
+            "data_fiscal": data_fiscal,
             "nota": nota
         }
         Listado.save(listado)

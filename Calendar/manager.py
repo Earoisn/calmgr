@@ -61,10 +61,10 @@ def tinter(tmin=None, tmax=None):
             fecha = input("desde día, mes[, año]:\n")
             día, mes, año = check_fecha(fecha)
             desde = ahora.replace(
-                year=año, 
-                month=mes, 
-                day=día, 
-                hour=0, 
+                year=año,
+                month=mes,
+                day=día,
+                hour=0,
                 minute=0
             )     
         else:
@@ -89,10 +89,10 @@ def tinter(tmin=None, tmax=None):
             fecha = input("hasta día, mes[, año]:\n")
             día, mes, año = check_fecha(fecha)
             hasta = ahora.replace(
-                year=año, 
-                month=mes, 
-                day=día, 
-                hour=23, 
+                year=año,
+                month=mes,
+                day=día,
+                hour=23,
                 minute=59
             )
         else:
@@ -165,7 +165,15 @@ def disponible(intervalo, inidefault: tuple = (9, 0), findefault: tuple = (21, 3
         horarios disponibles.
     """
     
-    días = {0: "lunes", 1: "martes", 2: "miércoles", 3: "jueves", 4: "viernes", 5: "sábado", 6: "domingo"}
+    días = {
+        0: "lunes",
+        1: "martes",
+        2: "miércoles",
+        3: "jueves",
+        4: "viernes",
+        5: "sábado",
+        6: "domingo"
+    }
     cambiar = input("Cambiar hora de inicio y finalización del día laboral? Espacio para cambiar, enter para seguir.\n")
     
     if len(cambiar) != 0:
@@ -295,7 +303,7 @@ def dic_alumnos(intervalo: tuple, precio=60):
                     alumnos.setdefault(alumno, evento if not clase.es_grupal else deepcopy(evento)).agrega_clase(
                         evento.ini_d, evento.ini_m,
                         evento.ini_h, evento.ini_min,
-                        evento.fin_h, evento.fin_min, 
+                        evento.fin_h, evento.fin_min,
                         evento.precio
                     )
 
