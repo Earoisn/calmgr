@@ -7,22 +7,24 @@ from event import Event
 from alumno import Listado
 
 def n2a(datetime: dt):
-    "abrev. de 'naive to aware' - toma un datetime y lo hace offset aware para Arg"
+    """abrev. de 'naive to aware' - toma un datetime y lo hace offset aware para Arg"""
     return datetime.replace(tzinfo=tz(delta(hours=-3)))
 
 
 def s2d(datetime: str):
-    "abrev. de 'string_to_date' - wrapper para datetime.datetime.fromisoformat()"
+    """abrev. de 'string_to_date' - wrapper para datetime.datetime.fromisoformat()"""
     return dt.fromisoformat(datetime)
 
 
 def t2d(datetime: tuple):
-    "abrev. de 'tuple_to_date' - (año, mes, día, hora, minuto) -> offset aware datetime para Arg"
+    """
+    abrev. de 'tuple_to_date' - (año, mes, día, hora, minuto) -> offset aware datetime para Arg
+    """
     return n2a(dt(datetime[0], datetime[1], datetime[2], datetime[3], datetime[4]))
 
 
 def d2t(datetime:dt):
-    "abrev. de 'date_to_tuple' - datetime -> (año, mes, día, hora, minuto)"
+    """abrev. de 'date_to_tuple' - datetime -> (año, mes, día, hora, minuto)"""
     return (datetime.year, datetime.month, datetime.day, datetime.hour, datetime.minute)
 
 
