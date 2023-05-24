@@ -2,8 +2,8 @@ from datetime import datetime as dt, timedelta as delta, timezone as tz
 from copy import deepcopy
 import sys
 sys.path.extend(["D:\\code\\gcloud", "D:\\code\\gcloud\\Calendar"])
-from event import Event
 from google import glogin, get_service
+from event import Event
 from alumno import Listado
 
 def n2a(datetime: dt):
