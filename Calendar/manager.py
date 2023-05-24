@@ -32,8 +32,11 @@ def tinter(tmin=None, tmax=None):
     """
     Pide al usuario día, mes y año o toma fecha actual y cantidad de días por delante.
     Args:
-        tmin (opcional): tupla (yyyy,m,d,H,M) - En caso de recibir este argumento, funciona como tmin en el return. 
-        Puede ser utilizado para calcular la deuda de un alumno introduciendo el útlimo pago registrado.
+        tmin (opcional): tupla (yyyy,m,d,H,M) - En caso de recibir este argumento,funciona como tmin en el return. 
+        Puede ser utilizado para calcular la deuda de un alumno introduciendo el útlimo
+        pago registrado.
+        tmax (opcional): idem tmin, pero tmax. 
+
     Returns:
         tupla (tmin, tmax) de fechas en formato iso para usar la API de Google Calendar
     """
@@ -124,7 +127,8 @@ def tinter(tmin=None, tmax=None):
 def freebusy(intervalo: tuple):
     """
     Args:
-        intervalo: tupla (fecha de inicio, fecha de finalización) ambas en isoformat.
+        intervalo: tupla (tmin, tmax) en isoformat para establecer ventana de búsqueda en
+        Google Calendar. Se puede usar tinter() para generarla.
     Returns:
         freebusy().query() response de Google Calendar API
         o
@@ -151,9 +155,15 @@ def freebusy(intervalo: tuple):
         return events_busy
 
 
-def disponible(intervalo, inidefault: tuple = (9, 0), findefault: tuple = (21, 30)):
+def disponible(
+        intervalo: tuple,
+        inidefault: tuple = (9, 0),
+        findefault: tuple = (21, 30)
+    ):
     """
     Args:
+        intervalo: tupla (tmin, tmax) en isoformat para establecer ventana de búsqueda en
+        Google Calendar. Se puede usar tinter() para generarla.
         events_busy: freebusy().query() de la API de Google Calendar,
         inidefault: tupla (hora, minuto) para inicio default del día,
         findefault: tupla (hora,minuto) para fin default del día
@@ -261,7 +271,7 @@ def disponible(intervalo, inidefault: tuple = (9, 0), findefault: tuple = (21, 3
 def dic_alumnos(intervalo: tuple, precio=60):
     """ 
     Args:
-        intervalo: tupla (tmin, tmax) para establecer ventana de búsqueda en Google Calendar.
+        intervalo: tupla (tmin, tmax) en isoformat para establecer ventana de búsqueda en Google Calendar. Se puede usar tinter() para generarla.
         precio: precio por minuto de clase.
 
     Returns:
@@ -318,7 +328,9 @@ def info_alumnos(intervalo: tuple, base=None):
     Pide al usuario lista de alumnos o enter para mostrar todos.
     
     Args:
-        intervalo: tupla (tmin, tmax) para establecer ventana de búsqueda en Google Calendar.
+        intervalo: tupla (tmin, tmax) en isoformat para establecer ventana de búsqueda en
+        Google Calendar. Se puede usar tinter() para generarla.
+        base (opcional): base de datos local (instancia de Listado) que hay que pasar cuando se quiere chequear deuda de uno o más alumnos.
 
     Prints:
         lista de alumnos con sus clases, el precio de cada una, la suma total del alumno y la suma total de todos los alumnos.
@@ -354,8 +366,11 @@ def info_alumnos(intervalo: tuple, base=None):
                 if not base.alumnos.get(alumno):
                     print (f"No se encontró información de {alumno} en la base, comprobá manualmente su situación.")
                     break
-            
-                if t2d((dt.now().year,mes,día,ini_h,ini_min)) < t2d(base.alumnos[alumno]["fecha_pago"]):
+                
+                fecha_clase = t2d((dt.now().year, mes, día, ini_h, ini_min))
+                fecha_pago = t2d(base.alumnos[alumno]["fecha_pago"])
+
+                if fecha_clase < fecha_pago:
                     continue
             
             print(f"Clase del {día:02}/{mes:02} de {ini_h:02}:{ini_min:02} a {fin_h:02}:{fin_min:02} --> ${precio:.0f}")
@@ -473,6 +488,8 @@ def main():
                     
                     case "d":
                         base = Listado.load()
+                        # establece la fecha de último pago más antigua de entre las de
+                        # todos los alumnos como tmin.
                         tmin = (
                             min(
                             [t2d(datos["fecha_pago"]) for datos in base.alumnos.values()]
