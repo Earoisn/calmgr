@@ -144,10 +144,18 @@ class Listado:
         return alumnos
 
     def datagen():
-        nombre = input("Nombre y apellido: \n")
-        cuit = input("CUIT sin guiones ni espacios: \n")
-        cond = input("Condición frente al IVA: \n")
-        data_fiscal = f"{nombre}, {cond}, CUIT: {cuit}"
+        opc = input("[s]in información, [c]onsumidor final, [d]ata fiscal.\n")
+        
+        if opc == "s":
+            data_fiscal = "Sin información"
+        elif opc == "c":
+            data_fiscal = "Consumidor Final"
+        else:
+            nombre = input("Nombre y apellido: \n")
+            cuit = input("CUIT sin guiones ni espacios: \n")
+            cond = input("Condición frente al IVA: \n")
+            data_fiscal = f"{nombre}, {cond}, CUIT: {cuit}"
+        
         return data_fiscal
 
     def agregar(
