@@ -453,7 +453,7 @@ def main():
                         consulta = "x"
                         
                         while consulta not in "cd":
-                            consulta = input("[d]ata fiscal y último pago, [c]lases. \n")
+                            consulta = input("[d]ata fiscal y último pago, [c]lases.\n")
                         
                         match consulta:
                             
