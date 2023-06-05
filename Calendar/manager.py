@@ -107,9 +107,9 @@ def tinter(tmin=None, tmax=None):
                     "La cagaste, ventana de tiempo establecida por defecto a 10 días.\n"
                 )
                 hasta = 10
-            hasta = (desde + delta(hasta)).replace(hour=23, minute=59)
+            hasta = (desde + delta(hasta))
     elif not tmax:
-        hasta = ahora.replace(hour=23, minute=59)
+        hasta = ahora
     
     if (hasta - desde).total_seconds() <= 0:
         print(
