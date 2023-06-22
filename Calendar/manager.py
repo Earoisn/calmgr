@@ -351,14 +351,14 @@ def info_alumnos(intervalo: tuple, base=None):
     
     for alumno in lista_alumnos:
         datos = alumnos.get(alumno, None)
-        
+        txt = ""
+
         if not datos:
             print(f"No se encontró información de {alumno} en el calendario.\n")
             continue
         
         encontrado = True
-        print(f"--------------------------------------------\n{alumno}:")
-        
+                
         for clase in datos.clases:
             día, mes, ini_h, ini_min, fin_h, fin_min, precio = clase
             
@@ -373,15 +373,24 @@ def info_alumnos(intervalo: tuple, base=None):
                 if fecha_clase < fecha_pago:
                     continue
             
-            print(f"Clase del {día:02}/{mes:02} de {ini_h:02}:{ini_min:02} a {fin_h:02}:{fin_min:02} --> ${precio:.0f}")
+            txt += f"Clase del {día:02}/{mes:02} de {ini_h:02}:{ini_min:02} a {fin_h:02}:{fin_min:02} --> ${precio:.0f}\n"
             plata.append(precio)
         
+        if base and (sum(plata) == 0): 
+            print(f"--------------------------------------------\n"\
+                + f"{alumno} no registra deuda.\n"\
+                + f"--------------------------------------------\n")
+
+            continue
+
+        print(f"--------------------------------------------\n{alumno}:")
+        print(txt)
         print(f"Total: ${sum(plata):.0f}.\n--------------------------------------------\n")
         total.extend(plata)
         plata.clear()
     
     if encontrado:
-        print(f"Total final: ${sum(total):.0f}")
+        print(f"\nTotal final: ${sum(total):.0f}\n")
 
     return alumnos
 
