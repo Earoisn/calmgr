@@ -161,6 +161,7 @@ class Listado:
     def agregar(
         nombre: str = None,
         fecha_pago: tuple = (),
+        pago_anterior: tuple = (),
         data_fiscal: str = "Sin información",
         nota: str = "",
         mod: bool = False,
@@ -173,7 +174,8 @@ class Listado:
         if not fecha_pago:
             fecha_remota = dt.now() - delta(days=90)
             fecha_pago = (fecha_remota.year, fecha_remota.month, fecha_remota.day, 0, 0)
-        
+
+        pago_anterior = fecha_pago
         listado = Listado.load()
         data = listado.alumnos.get(nombre)
         
@@ -212,7 +214,8 @@ class Listado:
         listado.alumnos[nombre] = {
             "fecha_pago": fecha_pago,
             "data_fiscal": data_fiscal,
-            "nota": nota
+            "nota": nota,
+            "pago_anterior": pago_anterior
         }
         Listado.save(listado)
      
@@ -240,6 +243,7 @@ class Listado:
         else:
             m, d = fecha
         
+        listado.alumnos[nombre]["pago_anterior"] = listado.alumnos[nombre]["fecha_pago"]
         listado.alumnos[nombre]["fecha_pago"] = (y,m,d,23,59)
         Listado.save(listado)
         print("Guardado.")
@@ -263,6 +267,7 @@ class Listado:
                 + f"{alumno}\n"\
                 + f"Data fiscal: {datos.get('data_fiscal')}\n"\
                 + f"Fecha de pago: {t2d(datos.get('fecha_pago')).strftime('%d/%m/%Y')}\n"\
+                + f"Pago anterior: {t2d(datos.get('pago_anterior')).strftime('%d/%m/%Y')}\n"\
                 + f"Nota: {datos.get('nota')}\n"
                 + "--------------------------------------------\n"
             )
