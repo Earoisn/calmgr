@@ -33,8 +33,8 @@ def tinter(tmin=None, tmax=None):
     Pide al usuario día, mes y año o toma fecha actual y cantidad de días por delante.
     Args:
         tmin (opcional): tupla (yyyy,m,d,H,M) - En caso de recibir este argumento,funciona como tmin en el return. 
-        Puede ser utilizado para calcular la deuda de un alumno introduciendo el útlimo
-        pago registrado.
+        (Puede ser utilizado para calcular la deuda de un alumno introduciendo el útlimo
+        pago registrado).
         tmax (opcional): idem tmin, pero tmax. 
 
     Returns:
@@ -107,7 +107,7 @@ def tinter(tmin=None, tmax=None):
                     "La cagaste, ventana de tiempo establecida por defecto a 10 días.\n"
                 )
                 hasta = 10
-            hasta = (desde + delta(hasta))
+            hasta = (desde.replace(hour=23, minute=59) + delta(hasta))
     elif not tmax:
         hasta = ahora
     
@@ -512,6 +512,7 @@ def main():
                             try:
                                 d, m = eval(input("día, mes: "))
                                 Listado.pago(alumno[0], (m, d))
+                                Listado.data_pago(alumno)
                                 continue
                             except:
                                 print("La cagaste. Eran número de día y número de mes separados con coma.\n")
