@@ -473,7 +473,7 @@ def main():
                                     todos = input("Espacio para mostrar todos, enter para continuar.\n")
                                     
                                     if todos == " ":
-                                        alumnos = Listado.load().alumnos
+                                        alumnos = sorted(Listado.load().alumnos.keys())
                                     else: continue
 
                                 elif len(alumnos) == 1:

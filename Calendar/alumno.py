@@ -116,14 +116,15 @@ class Listado:
             for b in nombres if nombre.lower() == b.lower()
         ]
         
-        if mod: return [nombre.capitalize() for nombre in nombres]
+        if mod: return sorted([nombre.capitalize() for nombre in nombres])
 
         if len(encontrados) == 0:
             print("No se encontró información para está búsqueda en la base de datos.")
             return []
         elif len(encontrados) == len(exactos):
-            return encontrados
+            return sorted(encontrados)
         else:
+            encontrados.sort()
             print("Posibles coincidencias:")
             
             for i, alumno in enumerate(encontrados):
@@ -141,7 +142,7 @@ class Listado:
             
             alumnos = [encontrados[n-1] for n in selec]
 
-        return alumnos
+        return sorted(alumnos)
 
     def datagen():
         opc = input("[s]in información, [c]onsumidor final, [d]ata fiscal.\n")
