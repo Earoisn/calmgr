@@ -1,4 +1,4 @@
-from datetime import datetime as dt, timedelta as delta, timezone as tz
+from datetime import datetime as dt, timedelta as delta, timezone as tz, time
 from copy import deepcopy
 import sys
 sys.path.extend(["D:\\code\\gcloud", "D:\\code\\gcloud\\Calendar"])
@@ -164,7 +164,6 @@ def disponible(
     Args:
         intervalo: tupla (tmin, tmax) en isoformat para establecer ventana de búsqueda en
         Google Calendar. Se puede usar tinter() para generarla.
-        events_busy: freebusy().query() de la API de Google Calendar,
         inidefault: tupla (hora, minuto) para inicio default del día,
         findefault: tupla (hora,minuto) para fin default del día
 
@@ -174,7 +173,7 @@ def disponible(
     Prints:
         horarios disponibles.
     """
-    
+    ahora = n2a(dt.now())
     días = {
         0: "lunes",
         1: "martes",
@@ -184,6 +183,24 @@ def disponible(
         5: "sábado",
         6: "domingo"
     }
+
+# Freebusy devuelve solamente los días con eventos agendados. Para no saltear los días totalmente libres en la búsqueda, se agrega un evento de un minuto de duración 6 minutos antes de inidefault.
+    def fechas_salteadas(intervalo, busy):
+        fechas_intervalo = [
+            s2d(intervalo[0]) + delta(days=x) 
+            for x in range((s2d(intervalo[1]) - s2d(intervalo[0])).days+1)
+        ]
+        fechas_con_evento = [dt.fromisoformat(evento['start']).date() for evento in busy]
+        
+        for fecha in fechas_intervalo:
+            if not fecha in fechas_con_evento and fecha > ahora:
+                busy.append(
+                    {'start': (n2a(dt.combine(fecha, time(*inidefault))-delta(minutes=6))).isoformat(),
+                    'end': (n2a(dt.combine(fecha, time(*inidefault))-delta(minutes=5))).isoformat()
+                    }
+                )
+        busy.sort(key=lambda x: x['start'])
+
     cambiar = input("Cambiar hora de inicio y finalización del día laboral? Espacio para cambiar, enter para seguir.\n")
     
     if len(cambiar) != 0:
@@ -197,12 +214,12 @@ def disponible(
             )
     
     events_busy = freebusy(intervalo)["calendars"]["primary"]["busy"]
+    fechas_salteadas(intervalo, events_busy)
     ini_h, ini_min = inidefault
     fin_h, fin_min = findefault
+    horarios_disponibles = {}
     actual = None
     anterior = None
-    horarios_disponibles = {}
-    ahora = n2a(dt.now())
     
     for evento in events_busy:
         ini = s2d(evento["start"])
