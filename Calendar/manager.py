@@ -285,7 +285,7 @@ def disponible(
     return horarios_disponibles
 
 
-def dic_alumnos(intervalo: tuple, precio=60):
+def dic_alumnos(intervalo: tuple, precio=90):
     """ 
     Args:
         intervalo: tupla (tmin, tmax) en isoformat para establecer ventana de búsqueda en Google Calendar. Se puede usar tinter() para generarla.
@@ -340,7 +340,7 @@ def dic_alumnos(intervalo: tuple, precio=60):
     return alumnos
 
 
-def info_alumnos(intervalo: tuple, base=None):
+def info_alumnos(intervalo: tuple, base=None, pago=None):
     """
     Pide al usuario lista de alumnos o enter para mostrar todos.
     
@@ -348,6 +348,7 @@ def info_alumnos(intervalo: tuple, base=None):
         intervalo: tupla (tmin, tmax) en isoformat para establecer ventana de búsqueda en
         Google Calendar. Se puede usar tinter() para generarla.
         base (opcional): base de datos local (instancia de Listado) que hay que pasar cuando se quiere chequear deuda de uno o más alumnos.
+        pago (opcional): lista con el nombre de un único alumno para usar en "Listado.pago()"
 
     Prints:
         lista de alumnos con sus clases, el precio de cada una, la suma total del alumno y la suma total de todos los alumnos.
@@ -359,7 +360,10 @@ def info_alumnos(intervalo: tuple, base=None):
     plata = list()
     total = []
     alumnos = dic_alumnos(intervalo)
-    lista_alumnos = Listado.buscar()
+    if pago:
+        lista_alumnos = pago
+    else:
+        lista_alumnos = Listado.buscar()
     
     if not lista_alumnos:
         lista_alumnos = alumnos.keys()
@@ -406,7 +410,7 @@ def info_alumnos(intervalo: tuple, base=None):
         total.extend(plata)
         plata.clear()
     
-    if encontrado:
+    if encontrado and not pago:
         print(f"\nTotal final: ${sum(total):.0f}\n")
 
     return alumnos
@@ -533,10 +537,15 @@ def main():
                             continue
                         
                         fecha = input("Espacio para introducir fecha de último pago, enter para fecha actual.\n")
-                        
+                        base_aux = Listado.load()
+                        tmin = t2d(base_aux.alumnos[alumno[0]]["fecha_pago"]).isoformat()
+                        tmax = n2a(dt.now()).isoformat()
+                        intervalo = (tmin,tmax)
+
                         if fecha != "":
                             try:
                                 d, m = eval(input("día, mes: "))
+                                info_alumnos(intervalo=intervalo, pago=alumno)
                                 Listado.pago(alumno[0], (m, d))
                                 Listado.data_pago(alumno)
                                 continue
@@ -544,6 +553,7 @@ def main():
                                 print("La cagaste. Eran número de día y número de mes separados con coma.\n")
                                 continue
                         
+                        info_alumnos(intervalo=intervalo, pago=alumno)
                         Listado.pago(alumno[0])
                         Listado.data_pago(alumno)
                         continue

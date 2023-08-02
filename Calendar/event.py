@@ -2,7 +2,7 @@ from datetime import datetime as dt
 
 
 class Event:
-    def __init__(self, stream, precio=60):
+    def __init__(self, stream, precio=90):
         días = {
             0: "lunes",
             1: "martes",
