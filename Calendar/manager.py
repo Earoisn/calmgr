@@ -360,12 +360,14 @@ def info_alumnos(intervalo: tuple, base=None, pago=None):
     plata = list()
     total = []
     alumnos = dic_alumnos(intervalo)
+    todos = None
     if pago:
         lista_alumnos = pago
     else:
         lista_alumnos = Listado.buscar()
     
     if not lista_alumnos:
+        todos = True
         lista_alumnos = alumnos.keys()
 
     encontrado = False
@@ -396,22 +398,22 @@ def info_alumnos(intervalo: tuple, base=None, pago=None):
             
             txt += f"Clase del {día:02}/{mes:02} de {ini_h:02}:{ini_min:02} a {fin_h:02}:{fin_min:02} --> ${precio:.0f}\n"
             plata.append(precio)
-        
-        if base and (sum(plata) == 0): 
+        suma = sum(plata)
+        if base and suma == 0 and not todos: 
             print(f"--------------------------------------------\n"\
                 + f"{alumno} no registra deuda.\n"\
                 + f"--------------------------------------------\n")
 
             continue
-
-        print(f"--------------------------------------------\n{alumno}:")
-        print(txt)
-        print(f"Total: ${sum(plata):.0f}.\n--------------------------------------------\n")
-        total.extend(plata)
-        plata.clear()
-    
-    if encontrado and not pago:
-        print(f"\nTotal final: ${sum(total):.0f}\n")
+        if not suma == 0:
+            print(f"--------------------------------------------\n{alumno}:")
+            print(txt)
+            print(f"Total: ${sum(plata):.0f}.\n--------------------------------------------\n")
+            total.extend(plata)
+            plata.clear()
+    suma_final = sum(total)
+    if encontrado and not pago and not (suma_final == 0):
+        print(f"\nTotal final: ${suma_final:.0f}\n")
 
     return alumnos
 
