@@ -2,7 +2,7 @@ from datetime import datetime as dt
 
 
 class Event:
-    def __init__(self, stream, precio=90):
+    def __init__(self, stream, precio=(10000/60)):
         días = {
             0: "lunes",
             1: "martes",
@@ -33,6 +33,7 @@ class Event:
             self.es_finde = True
         
         self.día = días[self.inicio.weekday()]
+        self.ini_a = self.inicio.year
         self.ini_d = self.inicio.day
         self.ini_m = self.inicio.month
         self.ini_h = self.inicio.hour
@@ -52,5 +53,5 @@ class Event:
         self.clases = []
     
     
-    def agrega_clase(self, d, m, ini_h, ini_min, fin_h, fin_min, precio):
-        self.clases.append((d, m, ini_h, ini_min, fin_h, fin_min, precio))
+    def agrega_clase(self, d, m, a, ini_h, ini_min, fin_h, fin_min, precio):
+        self.clases.append((d, m, a, ini_h, ini_min, fin_h, fin_min, precio))

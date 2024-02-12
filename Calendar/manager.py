@@ -285,7 +285,7 @@ def disponible(
     return horarios_disponibles
 
 
-def dic_alumnos(intervalo: tuple, precio=90):
+def dic_alumnos(intervalo: tuple, precio=10000/60):
     """ 
     Args:
         intervalo: tupla (tmin, tmax) en isoformat para establecer ventana de búsqueda en Google Calendar. Se puede usar tinter() para generarla.
@@ -328,9 +328,9 @@ def dic_alumnos(intervalo: tuple, precio=90):
             
                 for alumno in clase.alumno:
                     alumnos.setdefault(alumno, evento if not clase.es_grupal else deepcopy(evento)).agrega_clase(
-                        evento.ini_d, evento.ini_m,
-                        evento.ini_h, evento.ini_min,
-                        evento.fin_h, evento.fin_min,
+                        evento.ini_d, evento.ini_m, evento.ini_a,
+                        evento.ini_h, evento.ini_min, 
+                        evento.fin_h, evento.fin_min, 
                         evento.precio
                     )
 
@@ -383,14 +383,14 @@ def info_alumnos(intervalo: tuple, base=None, pago=None):
         encontrado = True
                 
         for clase in datos.clases:
-            día, mes, ini_h, ini_min, fin_h, fin_min, precio = clase
+            día, mes, año, ini_h, ini_min, fin_h, fin_min, precio = clase
             
             if base:
                 if not base.alumnos.get(alumno):
                     print (f"No se encontró información de {alumno} en la base, comprobá manualmente su situación.")
                     break
                 
-                fecha_clase = t2d((dt.now().year, mes, día, ini_h, ini_min))
+                fecha_clase = t2d((año, mes, día, ini_h, ini_min))
                 fecha_pago = t2d(base.alumnos[alumno]["fecha_pago"])
 
                 if fecha_clase < fecha_pago:
@@ -433,7 +433,7 @@ def calc_ingresos(intervalo: tuple):
             precio = eval(precio) / 60
         except:
             print("La cagaste, precio establecido por defecto.\n")
-            precio = 60
+            precio = 10000/60
         alumnos = dic_alumnos(intervalo, precio)
     else:
         alumnos = dic_alumnos(intervalo)
