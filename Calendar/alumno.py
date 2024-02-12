@@ -240,9 +240,9 @@ class Listado:
             return None
         
         if not fecha:
-            m, d = dt.now().month, dt.now().day
+            m, d, y = dt.now().month, dt.now().day, dt.now().year
         else:
-            m, d = fecha
+            m, d, y = fecha
         
         listado.alumnos[nombre]["pago_anterior"] = listado.alumnos[nombre]["fecha_pago"]
         listado.alumnos[nombre]["fecha_pago"] = (y,m,d,23,59)

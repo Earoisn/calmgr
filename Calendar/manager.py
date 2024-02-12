@@ -442,7 +442,7 @@ def calc_ingresos(intervalo: tuple):
     
     for alumno in alumnos.values():
         for clase in alumno.clases:
-            plata.append(clase[6])
+            plata.append(clase[7])
     
     print(f"Total: ${sum(plata):.0f}.\n")
 
@@ -538,7 +538,8 @@ def main():
                             print("La cagaste. Te dije uno solo.\n")
                             continue
                         
-                        fecha = input("Espacio para introducir fecha de último pago, enter para fecha actual.\n")
+                        fecha = input("Espacio para introducir fecha de último pago (dd,mm,aaaa), enter para fecha actual.\n")
+                        
                         base_aux = Listado.load()
                         tmin = t2d(base_aux.alumnos[alumno[0]]["fecha_pago"]).isoformat()
                         tmax = n2a(dt.now()).isoformat()
@@ -546,13 +547,13 @@ def main():
 
                         if fecha != "":
                             try:
-                                d, m = eval(input("día, mes: "))
+                                d, m, a= eval(input("dd, mm, aaaa: "))
                                 info_alumnos(intervalo=intervalo, pago=alumno)
-                                Listado.pago(alumno[0], (m, d))
+                                Listado.pago(alumno[0], (m, d, a))
                                 Listado.data_pago(alumno)
                                 continue
                             except:
-                                print("La cagaste. Eran número de día y número de mes separados con coma.\n")
+                                print("La cagaste. Eran número de día y número de mes y número de año separados con coma.\n")
                                 continue
                         
                         info_alumnos(intervalo=intervalo, pago=alumno)
