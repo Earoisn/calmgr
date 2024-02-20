@@ -48,7 +48,7 @@ class Event:
         self.precio = self.durac * precio
         
         if self.es_grupal:
-            self.precio *= 0.75
+            self.precio *= 0.8
         
         self.clases = []
     
