@@ -293,7 +293,7 @@ def dic_alumnos(intervalo: tuple, precio=10000/60):
 
     Returns:
         alumnos: diccionario con nombre del alumno asociado a un objeto Event(). 
-        Event().clases = lista de tuplas (d, m, ini_h, ini_min, fin_h, fin_min, precio) para cada clase.
+        Event().clases = lista de tuplas (d, m, a, ini_h, ini_min, fin_h, fin_min, precio) para cada clase.
     """
    
     page_token = None
