@@ -285,7 +285,7 @@ def disponible(
     return horarios_disponibles
 
 
-def dic_alumnos(intervalo: tuple, precio=10000/60):
+def dic_alumnos(intervalo: tuple, precio=14000/60):
     """ 
     Args:
         intervalo: tupla (tmin, tmax) en isoformat para establecer ventana de búsqueda en Google Calendar. Se puede usar tinter() para generarla.
@@ -433,7 +433,7 @@ def calc_ingresos(intervalo: tuple):
             precio = eval(precio) / 60
         except:
             print("La cagaste, precio establecido por defecto.\n")
-            precio = 10000/60
+            precio = 14000/60
         alumnos = dic_alumnos(intervalo, precio)
     else:
         alumnos = dic_alumnos(intervalo)
