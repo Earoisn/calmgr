@@ -543,7 +543,7 @@ def main():
                         base_aux = Listado.load()
                         tmin = t2d(base_aux.alumnos[alumno[0]]["fecha_pago"]).isoformat()
                         tmax = n2a(dt.now()).isoformat()
-                        intervalo = (tmin,tmax)
+                        intervalo = (tmin, tmax)
 
                         if fecha != "":
                             try:
@@ -553,6 +553,8 @@ def main():
                                 if len(aux) == 3 and aux[2] < 100:
                                     aux[2] += 2000
                                 d, m, a = aux
+                                tmax = t2d((a, m, d, 23, 59)).isoformat()
+                                intervalo = (tmin, tmax)
                                 info_alumnos(intervalo=intervalo, pago=alumno)
                                 Listado.pago(alumno[0], (m, d, a))
                                 Listado.data_pago(alumno)
