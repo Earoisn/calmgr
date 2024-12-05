@@ -321,6 +321,9 @@ def dic_alumnos(intervalo: tuple, precio=14000/60):
         page_token = events.get('nextPageToken', None)
 
         for i in lista_eventos:
+            dateTime = i["start"].get("dateTime", False)
+            if not dateTime: continue
+            
             evento = Event(i, precio)
             
             if evento.es_clase:
