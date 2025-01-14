@@ -6,6 +6,8 @@ from google_ import glogin, get_service
 from event import Event
 from alumno import Listado
 
+PRECIO = 18000
+
 def n2a(datetime: dt):
     """abrev. de 'naive to aware' - toma un datetime y lo hace offset aware para Arg"""
     return datetime.replace(tzinfo=tz(delta(hours=-3)))
@@ -285,7 +287,7 @@ def disponible(
     return horarios_disponibles
 
 
-def dic_alumnos(intervalo: tuple, precio=14000/60):
+def dic_alumnos(intervalo: tuple, precio=PRECIO/60):
     """ 
     Args:
         intervalo: tupla (tmin, tmax) en isoformat para establecer ventana de búsqueda en Google Calendar. Se puede usar tinter() para generarla.
@@ -436,7 +438,7 @@ def calc_ingresos(intervalo: tuple):
             precio = eval(precio) / 60
         except:
             print("La cagaste, precio establecido por defecto.\n")
-            precio = 14000/60
+            precio = PRECIO/60
         alumnos = dic_alumnos(intervalo, precio)
     else:
         alumnos = dic_alumnos(intervalo)

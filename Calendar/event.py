@@ -1,8 +1,9 @@
 from datetime import datetime as dt
 
+PRECIO = 18000
 
 class Event:
-    def __init__(self, stream, precio=(14000/60)):
+    def __init__(self, stream, precio=(PRECIO/60)):
         días = {
             0: "lunes",
             1: "martes",
